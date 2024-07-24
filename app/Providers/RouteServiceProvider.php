@@ -30,7 +30,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('api')
-                ->prefix('api')
+                ->prefix('vikingoapi') //cambio el prefijo de la ruta api por vikingoapi
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')

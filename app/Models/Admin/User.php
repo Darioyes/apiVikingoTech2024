@@ -19,8 +19,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'lastname',
         'email',
+        'gender',
+        'birthday',
+        'phone1',
+        'phone2',
+        'address',
         'password',
+        'cities_id',
+        'vikingo_rol_id',
     ];
 
     /**
@@ -42,4 +50,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+     //relacion muchos a uno con la tabla cities
+     public function cities()
+     {
+         return $this->belongsTo(cities::class);
+     }
+
+     //relacion de uno a muchos con la tabla maintenances
+     public function maintenances()
+     {
+         return $this->hasMany(maintenances::class);
+     }
+
+     //relacion de muchos a uno con la tabla vikingo_roles
+     public function vikingo_roles()
+     {
+         return $this->belongsTo(vikingoRoles::class);
+     }
+
+     //relacion de uno a muchos con la tabla sales
+     public function sales()
+     {
+         return $this->hasMany(sales::class);
+     }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('amount', 8, 2);
             $table->decimal('price', 8, 2);
             $table->timestamps();
-            $table->foreignId('category_direct_costs_id')->constrained('category_direct_costs')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('categories_direct_costs_id')->constrained('categories_direct_costs')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

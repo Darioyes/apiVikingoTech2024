@@ -27,7 +27,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->foreignId('cities_id')->constrained('cities')->onDelete('restrict')->onUpdate('cascade');
-            $table->foreignId('vikingo_rol_id')->constrained('vikingo_rols')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('vikingo_roles_id')->constrained('vikingo_roles')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

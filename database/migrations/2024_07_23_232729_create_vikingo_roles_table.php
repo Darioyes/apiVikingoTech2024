@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('vikingo_roles', function (Blueprint $table) {
             $table->id();
+            $table->string('name_admin', 45);
             $table->timestamps();
         });
     }

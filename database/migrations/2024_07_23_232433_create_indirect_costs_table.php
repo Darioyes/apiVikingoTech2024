@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('indirect_costs', function (Blueprint $table) {
             $table->id();
+            $table->string('name',100);
+            $table->text('description');
+            $table->decimal('amount', 8, 2);
+            $table->decimal('price', 8, 2);
             $table->timestamps();
+            $table->foreignId('category_indirect_costs_id')->constrained('category_indirect_costs')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

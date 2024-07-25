@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('nit')->unique()->nullable();
+            $table->string('phone1')->unique();
+            $table->string('phone2');
+            $table->string('address');
+            $table->string('email')->unique();
+            $table->text('description')->nullable();
             $table->timestamps();
+            $table->foreignId('cities_id')->constrained('cities')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

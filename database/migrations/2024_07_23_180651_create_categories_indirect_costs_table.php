@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('categories_indirect_costs', function (Blueprint $table) {
             $table->id();
+            $table->string('name',100);
+            $table->string('slug',200);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

@@ -13,7 +13,18 @@ return new class extends Migration
     {
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
+            $table->string('product', 100);
+            $table->text('description');
+            $table->string('reference', 100)->nullable();
+            $table->decimal('price', 8, 2);
+            $table->date('delivery_date')->nullable();
+            $table->string('image1', 100);
+            $table->string('image2', 100)->nullable();
+            $table->string('image3', 100)->nullable();
+            $table->string('image4', 100)->nullable();
+            $table->enum('advance', ['joined','in_progress','authorization','finalized'])->default('joined');
             $table->timestamps();
+            $table->foreignId('users_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

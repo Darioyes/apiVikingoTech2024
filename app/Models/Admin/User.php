@@ -28,7 +28,7 @@ class User extends Authenticatable
         'address',
         'password',
         'cities_id',
-        'vikingo_rol_id',
+        'vikingo_roles_id',
     ];
 
     /**

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules;
 
 class CreateRequest extends FormRequest
 {
@@ -21,6 +22,8 @@ class CreateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $passwordRule = Rules\Password::defaults()->mixedCase()->numbers()->min(8)->required();
+        $numbers = Rules\Password::defaults()->numbers();
         return [
             'name' => 'required|min:3|max:45',
             'lastname' => 'required|min:3|max:45',
@@ -28,12 +31,12 @@ class CreateRequest extends FormRequest
             'gender' => 'required|min:4|max:6',
             'birthday' => 'required|date',
             'phone1' => 'required|min:10|numeric|unique:users',
-            'phone2' => 'nullable|min:10|max:12|numeric',
+            'phone2' => 'nullable|min:10|numeric',
             'address' => 'nullable|min:5|max:255|string',
-            'image' => 'nullable|min:5|max:255|string',
-            'password' => 'required|min:1|max:12|confirmed',//password_confirmation
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'password' => ['confirmed',$passwordRule,$numbers],//password_confirmation
             'cities_id' => 'required|numeric|exists:cities,id',
-            'vikingo_rol_id' => 'required|numeric:exists:vikingo_rols,id'
+            'vikingo_roles_id' => 'required|numeric:exists:vikingo_roles,id'
         ];
     }
 }

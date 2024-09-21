@@ -45,14 +45,15 @@ return [
             'provider' => 'admins',
         ],
 
-        // 'user' => [
-        //     'driver' => 'session',
-        //     'provider' => 'users',
-        // ],
-        // 'api' => [
-        //     'driver' => 'sanctum', //para enviar correos de verificación
-        //     'provider' => 'users',
-        // ],
+        'user' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'api' => [
+            'driver' => 'sanctum', //para enviar correos de verificación
+            'provider' => 'users',
+
+        ],
     ],
 
     /*
@@ -78,10 +79,10 @@ return [
             'model' => App\Models\admin\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\Users\User::class,
-        // ],
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Users\User::class,
+        ],
 
         // 'users' => [ //esto no lo descomente
         //     'driver' => 'database',

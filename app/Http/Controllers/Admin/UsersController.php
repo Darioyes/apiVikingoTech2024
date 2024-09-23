@@ -8,13 +8,14 @@ use App\Http\Requests\Auth\CreateRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\updateRequest;
 use App\Models\Admin\User as UserAdmin;
-use Illuminate\Http\Request;
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+//esto se importa para escribir sql crudo
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -52,6 +53,8 @@ class UsersController extends Controller
     public function store(CreateRequest $request)
     {
         try{
+
+
             //creamos un nuevo usuario con los datos que nos llegan
             $user = new UserAdmin($request->input());
             //subimos la imagen y guardamos la ruta en la variable $path
@@ -117,21 +120,22 @@ class UsersController extends Controller
     public function update(updateRequest $request, UserAdmin $user)
     {
         try {
-            //dd($request);
             // Encuentra al usuario
-            $userToUpdate = UserAdmin::findOrFail($user->id);
+            $userToUpdate = UserAdmin::with(['vikingo_roles', 'cities'])
+                            ->findOrFail($user->id);
 
             // Llena el modelo con los datos del request
             $userToUpdate->fill($request->input());
 
             //si el usuario sube una imagen
             if($request->hasFile('image') && $request->file('image')->isValid()){
-                //guardamos la ruta de la imagen imagen
+                //guardamos la imagen y guardamos la ruta de la imagen imagen
                 $path = $request->file('image')->store('public/images/user');
                 //eliminamos la imagen anterior si existe
                 if($userToUpdate->image){
                     Storage::delete($userToUpdate->image);
                 };
+                //asintamos la ruta de la imagen a la base de datos
                 $userToUpdate->image = $path;
             }
 
@@ -139,7 +143,7 @@ class UsersController extends Controller
             if ($userToUpdate->isDirty()) {
                 //guardamos todo menos la imagen ya que se guardo anteriormente
                 $userToUpdate->fill($request->except('image'));
-                //salvamos la imagen
+                //guardamos los cambios
                 $userToUpdate->save();
                 return ApiResponse::success('Usuario actualizado correctamente', Response::HTTP_OK, $userToUpdate);
             }
@@ -156,9 +160,28 @@ class UsersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserAdmin $users)
+    public function destroy($id)
     {
-        //
+        try{
+            // Encuentra al usuario
+            $userToDestroy = UserAdmin::findOrFail($id);
+            //guardamos la imagen en la variable path
+            $path = $userToDestroy->image;
+            //eliminamos el usuario
+            $userToDestroy->delete();
+            //si la imagen se elimino correctamente eliminamos la imagen
+            if($userToDestroy){
+                Storage::delete($path);
+                return ApiResponse::success('Usuario eliminado correctamente',Response::HTTP_OK);
+            }else{
+                return ApiResponse::error('Error al eliminar el usuario', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+        }catch (ModelNotFoundException $e) {
+            return ApiResponse::error('El usuario que deseaeliminar no existe', Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function login(LoginRequest $request){
@@ -202,4 +225,58 @@ class UsersController extends Controller
 
         return ApiResponse::success('Sesión cerrada correctamente', Response::HTTP_OK);
     }
+
+    public function searchUser($search){
+
+        try{
+
+            $userSearch = UserAdmin::with(['vikingo_roles', 'cities'])
+                            ->where('name', 'LIKE',"%{$search}%")
+                            ->orWhere('lastname','LIKE',"%{$search}%")
+                            ->orWhere('email','LIKE',"%{$search}%")
+                            ->get();
+            return ApiResponse::success('Usuarios encontrados',Response::HTTP_OK,$userSearch);
+
+        }catch (ModelNotFoundException $e) {
+            return ApiResponse::error('El usuario que busca no existe', Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function totalUsers(){
+        try{
+
+            $totalUser = UserAdmin::count();
+
+            return ApiResponse::success('Usuarios totales',Response::HTTP_OK,$totalUser);
+
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function countGender(){
+       try {
+        $genderCount = DB::select("SELECT gender, COUNT(*) as total FROM users GROUP BY gender");
+        //dd($genderCount);
+
+        return ApiResponse::success('Usuarios por género', Response::HTTP_OK, $genderCount);
+    } catch (\Exception $e) {
+        return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    }
+
+    public function genderAVG(){
+        try{
+
+            $averageAgeByGender = DB::select("SELECT gender, ROUND(AVG(TIMESTAMPDIFF(YEAR, birthday, CURDATE())),1) AS average_age FROM users GROUP BY gender");
+            return ApiResponse::success('Promedio usuarios por género', Response::HTTP_OK, $averageAgeByGender);
+
+        }catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

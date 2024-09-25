@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\CategoriesProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CategoriesDirectCostsController;
+use App\Http\Controllers\Admin\CategoriesIndirectCostsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('vikingouser/login', [UsersController::class, 'login']);
 
 Route::middleware('auth:sanctum','verified')->group(function(){
+    //?rutas de usuarios
     //ruta tipo recurso de users
     Route::resource('users', UsersController::class)->only(['index', 'store', 'show','update','destroy']);
     //Route::resource('users', UsersController::class)->except(['create','edit']);
@@ -33,4 +37,16 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('genderavg',[UsersController::class,'genderAVG']);
     //ruta de logout de users
     Route::post('vikingouser/logout', [UsersController::class, 'logout']);
+
+    //?rutas de categorias de productos
+    //ruta tipo recurso de categoriesProducts
+    Route::resource('categoriesproducts', CategoriesProductsController::class)->only(['index', 'store', 'show','update','destroy']);
+    //?rutas de categorias de costos directos
+    //ruta tipo recurso de categoriesDirectCosts
+    Route::resource('categoriesdirectcosts', CategoriesDirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de categorias de costos indirectos
+    //ruta tipo recurso de categoriesIndirectCosts
+    Route::resource('categoriesindirectcosts', CategoriesIndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+
 });

@@ -36,7 +36,7 @@ class UsersController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(10);
             //devolvemos la respuesta
-            return ApiResponse::success('Usiarios registrados', Response::HTTP_OK, $users);
+            return ApiResponse::success('Usuarios registrados', Response::HTTP_OK, $users);
 
         }
         catch(ModelNotFoundException $e){
@@ -258,6 +258,7 @@ class UsersController extends Controller
 
     public function countGender(){
        try {
+        //escribimos la consulta sql
         $genderCount = DB::select("SELECT gender, COUNT(*) as total FROM users GROUP BY gender");
         //dd($genderCount);
 
@@ -270,11 +271,12 @@ class UsersController extends Controller
 
     public function genderAVG(){
         try{
-
+            //escribimos la consulta sql
             $averageAgeByGender = DB::select("SELECT gender, ROUND(AVG(TIMESTAMPDIFF(YEAR, birthday, CURDATE())),1) AS average_age FROM users GROUP BY gender");
             return ApiResponse::success('Promedio usuarios por género', Response::HTTP_OK, $averageAgeByGender);
 
         }catch (\Exception $e) {
+            //si hay un error devolvemos el error
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

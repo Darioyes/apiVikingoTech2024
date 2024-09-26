@@ -20,6 +20,8 @@ class maintenances extends Model
         'image3',
         'image4',
         'advance',
+        'repaired',
+        'warranty',
         'users_id',
     ];
 

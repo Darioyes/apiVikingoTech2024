@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('image3', 100)->nullable();
             $table->string('image4', 100)->nullable();
             $table->enum('advance', ['joined','in_progress','authorization','finalized'])->default('joined');
+            $table->enum('repaired', ['true','false'])->default('false');
+            $table->enum('warranty', ['true','false'])->default('false');
             $table->timestamps();
             $table->foreignId('users_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
         });

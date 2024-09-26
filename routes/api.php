@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoriesDirectCostsController;
 use App\Http\Controllers\Admin\CategoriesIndirectCostsController;
+use App\Http\Controllers\Admin\CitiesController;
+use App\Http\Controllers\Admin\VikingoRolesController;
+use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Admin\MaintenancesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,5 +52,21 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de categorias de costos indirectos
     //ruta tipo recurso de categoriesIndirectCosts
     Route::resource('categoriesindirectcosts', CategoriesIndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de ciudades
+    //ruta tipo recurso de cities
+    Route::resource('cities', CitiesController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de roles
+    //ruta tipo recurso de roles
+    Route::resource('roles', VikingoRolesController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de productos
+    //ruta tipo recurso de products
+    Route::resource('products', ProductsController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de mantenimientos
+    //ruta tipo recurso de maintenances
+    Route::resource('maintenances', MaintenancesController::class)->only(['index', 'store', 'show','update','destroy']);
 
 });

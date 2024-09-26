@@ -24,7 +24,7 @@ class products extends Model
         'image4',
         'image5',
         'color',
-        'category_id',
+        'categories_products_id',
     ];
 
     //relacion de uno a muchos con la tabla sales
@@ -34,7 +34,7 @@ class products extends Model
     }
 
   //relacion de muchos a uno con la tabla categories
-    public function categories()
+    public function categoriesProducts()
     {
         return $this->belongsTo(categoriesProducts::class);
     }

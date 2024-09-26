@@ -32,7 +32,7 @@ class UsersController extends Controller
             }
 
             //buscamos todos los usuarios y los paginamos de 10 en 10
-            $users = UserAdmin::with(['vikingo_roles', 'cities'])
+            $users = UserAdmin::with(['vikingo_roles:id,name_admin', 'cities:id,city'])
             ->orderBy('id', 'desc')
             ->paginate(10);
             //devolvemos la respuesta
@@ -96,7 +96,7 @@ class UsersController extends Controller
         try{
 
             //buscamos el usuario por id
-            $users = UserAdmin::with(['vikingo_roles', 'cities'])
+            $users = UserAdmin::with(['vikingo_roles:id,name_admin', 'cities:id,city'])
             ->findOrFail($user->id);
             //si el usuario no existe devolvemos un error
             if(!$users){

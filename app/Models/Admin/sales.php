@@ -12,10 +12,12 @@ class sales extends Model
     protected $fillable = [
         'description',
         'amount',
-        'total_sale',
-        'total_cost',
+        'confirm_sale',
+        'shopping_cart',
         'user_id',
         'product_id',
+        'sale_total',
+        'cost_total'
     ];
 
     //relacion muchos a uno con la tabla users

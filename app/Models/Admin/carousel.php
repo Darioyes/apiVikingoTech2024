@@ -16,7 +16,7 @@ class carousel extends Model
     ];
 
     //relacion de muchos a uno con la tabla products
-    public function products()
+    public function product()
     {
         return $this->belongsTo(products::class);
     }

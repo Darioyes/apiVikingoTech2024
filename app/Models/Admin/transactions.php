@@ -13,6 +13,7 @@ class transactions extends Model
         'indirect_costs_id',
         'direct_costs_id',
         'purcharse_orders_id',
+        'maintenances_id'
     ];
 
     //relacion de muchos a uno con la tabla sales
@@ -34,8 +35,13 @@ class transactions extends Model
     }
 
     //relacion de muchos a uno con la tabla purcharse_orders
-    public function purcharse_orders()
+    public function purchase_orders()
     {
         return $this->belongsTo(purchaseOrders::class);
+    }
+    //relacion de muchos a uno con la tabla maintenances
+    public function maintenances()
+    {
+        return $this->belongsTo(maintenances::class);
     }
 }

@@ -10,6 +10,13 @@ use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\VikingoRolesController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\MaintenancesController;
+use App\Http\Controllers\Admin\CarouselController;
+use App\Http\Controllers\Admin\SuppliersController;
+use App\Http\Controllers\Admin\DirectCostsController;
+use App\Http\Controllers\Admin\IndirectCostsController;
+use App\Http\Controllers\Admin\SalesController;
+use App\Http\Controllers\Admin\PurchaseOrdersController;
+use App\Http\Controllers\Admin\TransactionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,5 +75,33 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de mantenimientos
     //ruta tipo recurso de maintenances
     Route::resource('maintenances', MaintenancesController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de carrusel
+    //ruta tipo recurso de carousel
+    Route::resource('carousel', CarouselController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de proveedores
+    //ruta tipo recurso de suppliers
+    Route::resource('suppliers', SuppliersController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de costos directos
+    //ruta tipo recurso de directCosts
+    Route::resource('directcosts', DirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de costos indirectos
+    //ruta tipo recurso de indirectCosts
+    Route::resource('indirectcosts', IndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de ventas
+    //rutas tipo recurso de sales
+    Route::resource('sales', SalesController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de ordenes de compra
+    //ruta tipo recurso de purchaseOrders
+    Route::resource('purchaseorders', PurchaseOrdersController::class)->only(['index', 'store', 'show','update','destroy']);
+
+    //?rutas de transacciones
+    //ruta tipo recurso de transactions
+    Route::resource('transactions', TransactionsController::class)->only(['index', 'show']);
 
 });

@@ -22,8 +22,8 @@ class UpdateCarousel extends FormRequest
     public function rules(): array
     {
         return [
-            'carousel'=>'nullable|in:active,inactive',
-            'discount'=>'nullable|numeric|between:between:0,99999.99',
+            'carousel'=>'required|in:active,inactive',
+            'discount'=>'required|numeric|between:0,99999.99',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'product_id' => 'required|integer|exists:products,id',
         ];

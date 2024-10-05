@@ -11,7 +11,7 @@ class UpdateSales extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateSales extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'description'=>'required',
+            'amount'=>'required|numeric|between:0,9999999999.99',
+            'confirm_sale'=>'required|string|in:true,false',
+            'shopping_cart'=>'required|string|in:true,false',
+            'user_id'=>'required|integer|exists:users,id',
+            'product_id'=>'required|integer|exists:products,id',
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Carousel;
+namespace App\Http\Requests\PurchaseOrders;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateCarousel extends FormRequest
+class CreatePurchaseOrders extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,12 @@ class CreateCarousel extends FormRequest
     public function rules(): array
     {
         return [
-            'carousel'=>'required|in:active,inactive',
-            'discount'=>'required|numeric|between:0,99999.99',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'product_id' => 'required|integer|exists:products,id',
+            'purcharse'=>'required|numeric |between:0,9999999999.99',
+            'amount'=>'required|numeric |between:0,9999999999.99',
+            'description'=>'required|string',
+            'purcharse_order'=>'required|string|max:255',
+            'products_id'=>'required|exists:products,id',
+            'suppliers_id'=>'required|exists:suppliers,id',
         ];
     }
 }

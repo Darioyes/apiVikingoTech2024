@@ -14,11 +14,11 @@ class indirectCosts extends Model
         'description',
         'amount',
         'price',
-        'category_indirect_costs_id',
+        'categories_indirect_costs_id',
     ];
 
     //relacion de muchos a uno con la tabla category_indirect_costs
-    public function category_indirect_costs(){
+    public function categories_indirect_costs(){
         return $this->belongsTo(categoriesIndirectCosts::class);
     }
 }

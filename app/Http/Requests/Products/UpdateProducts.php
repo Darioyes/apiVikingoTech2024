@@ -29,9 +29,9 @@ class UpdateProducts extends FormRequest
             'reference'=> 'required|string|max:100|unique:products,reference,'.$productId,
             'barcode' => 'nullable|string|max:100|unique:products,barcode,'.$productId,
             'description'=> 'required|string|max:500',
-            'stock'=> 'required|numeric|between:0,999999.99',  // Hasta 6 enteros y 2 decimales
+            'stock'=> 'nullable|numeric|between:0,999999.99',  // Hasta 6 enteros y 2 decimales
             'sale_price'=> 'required|numeric|between:0,9999999999.99',  // Hasta 10 enteros y 2 decimales
-            'cost_price'=> 'required|numeric|between:0,9999999999.99',
+            'cost_price'=> 'nullable|numeric|between:0,9999999999.99',
             'image1'=>  'nullable|image|mimes:jpg,jpeg,png,webp|max:2048,image1,'.$productId,
             'image2'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'image3'=> 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',

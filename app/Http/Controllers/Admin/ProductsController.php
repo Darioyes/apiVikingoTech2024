@@ -113,6 +113,12 @@ class ProductsController extends Controller
 
             $productToUpdate = ProductsAdmin::with(['categoriesProducts'])->findOrFail($id);
             //dd($productToUpdate);
+            $image1 = $productToUpdate->image1;
+            $image2 = $productToUpdate->image2;
+            $image3 = $productToUpdate->image3;
+            $image4 = $productToUpdate->image4;
+            $image5 = $productToUpdate->image5;
+
             //llena el modelo con los datos de la peticion
             $productToUpdate->fill($request->input());
             //si el usuario sube image1
@@ -120,8 +126,8 @@ class ProductsController extends Controller
                 //guardamos la image1 y la ruta de la image1
                 $path = $request->file('image1')->store('public/images/products');
                 //eliminamos la image1 anterior si existe
-                if ($productToUpdate->image1) {
-                    Storage::delete($productToUpdate->image1);
+                if ($image1) {
+                    Storage::delete($image1);
                 }
                 //guardamos la nueva ruta de la image1
                 $productToUpdate->image1 = $path;
@@ -131,10 +137,10 @@ class ProductsController extends Controller
                 //guardamos la image2 y la ruta de la image2
                 $path2 = $request->file('image2')->store('public/images/products');
                 //eliminamos la image2 anterior si existe
-                if ($productToUpdate->image2) {
-                    Storage::delete($productToUpdate->image2);
+                if ($image2) {
+                    Storage::delete($image2);
                 }
-                //guardamos la nueva ruta de la image2
+                //guardamos la nueva
                 $productToUpdate->image2 = $path2;
             }
             //si el usuario sube image3
@@ -142,8 +148,8 @@ class ProductsController extends Controller
                 //guardamos la image3 y la ruta de la image3
                 $path3 = $request->file('image3')->store('public/images/products');
                 //eliminamos la image3 anterior si existe
-                if ($productToUpdate->image3) {
-                    Storage::delete($productToUpdate->image3);
+                if ($image3) {
+                    Storage::delete($image3);
                 }
                 //guardamos la nueva ruta de la image3
                 $productToUpdate->image3 = $path3;
@@ -153,8 +159,8 @@ class ProductsController extends Controller
                 //guardamos la image4 y la ruta de la image4
                 $path4 = $request->file('image4')->store('public/images/products');
                 //eliminamos la image4 anterior si existe
-                if ($productToUpdate->image4) {
-                    Storage::delete($productToUpdate->image4);
+                if ($image4) {
+                    Storage::delete($image4);
                 }
                 //guardamos la nueva ruta de la image4
                 $productToUpdate->image4 = $path4;
@@ -164,8 +170,8 @@ class ProductsController extends Controller
                 //guardamos la image5 y la ruta de la image5
                 $path5 = $request->file('image5')->store('public/images/products');
                 //eliminamos la image5 anterior si existe
-                if ($productToUpdate->image5) {
-                    Storage::delete($productToUpdate->image5);
+                if ($image5) {
+                    Storage::delete($image5);
                 }
                 //guardamos la nueva ruta de la image5
                 $productToUpdate->image5 = $path5;
@@ -179,6 +185,8 @@ class ProductsController extends Controller
                 //retornamos la respuesta
                 return ApiResponse::success('Producto actualizado', Response::HTTP_OK, $productToUpdate);
             }
+            //retornamos la respuesta
+            return ApiResponse::success('Producto no ha cambiado', Response::HTTP_OK, $productToUpdate);
 
         }catch(\Exception $e){
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -196,6 +204,26 @@ class ProductsController extends Controller
             $product = ProductsAdmin::findOrFail($id);
             //obtenemos el nombre del producto
             $name = $product->name;
+            //si existe la image1 la eliminamos
+            if ($product->image1) {
+                Storage::delete($product->image1);
+            }
+            //si existe la image2 la eliminamos
+            if ($product->image2) {
+                Storage::delete($product->image2);
+            }
+            //si existe la image3 la eliminamos
+            if ($product->image3) {
+                Storage::delete($product->image3);
+            }
+            //si existe la image4 la eliminamos
+            if ($product->image4) {
+                Storage::delete($product->image4);
+            }
+            //si existe la image5 la eliminamos
+            if ($product->image5) {
+                Storage::delete($product->image5);
+            }
             //eliminamos el producto
             $product->delete();
             //retornamos la respuesta

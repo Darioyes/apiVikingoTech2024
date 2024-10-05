@@ -106,11 +106,8 @@ class UsersController extends Controller
             return ApiResponse::success('Detalle del usuario', Response::HTTP_OK, $users);
 
 
-        }catch(\Exception $e){
-            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-
-        }catch(ModelNotFoundException $e){
-            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::error('Ciudad no encontrada', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -124,6 +121,8 @@ class UsersController extends Controller
             $userToUpdate = UserAdmin::with(['vikingo_roles', 'cities'])
                             ->findOrFail($user->id);
 
+            $image = $userToUpdate->image;
+
             // Llena el modelo con los datos del request
             $userToUpdate->fill($request->input());
 
@@ -132,8 +131,8 @@ class UsersController extends Controller
                 //guardamos la imagen y guardamos la ruta de la imagen imagen
                 $path = $request->file('image')->store('public/images/user');
                 //eliminamos la imagen anterior si existe
-                if($userToUpdate->image){
-                    Storage::delete($userToUpdate->image);
+                if($image){
+                    Storage::delete($image);
                 };
                 //asintamos la ruta de la imagen a la base de datos
                 $userToUpdate->image = $path;

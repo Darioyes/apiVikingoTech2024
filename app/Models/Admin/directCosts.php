@@ -11,15 +11,14 @@ class directCosts extends Model
 
     protected $fillable = [
         'name',
-        'slug',
         'description',
         'amount',
         'price',
-        'category_direct_costs_id',
+        'categories_direct_costs_id',
     ];
 
     //relacion de muchos a uno con la tabla category_direct_costs
-    public function category_direct_costs(){
+    public function categories_direct_costs(){
         return $this->belongsTo(categoriesDirectCosts::class);
     }
 }

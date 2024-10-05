@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Carousel;
+namespace App\Http\Requests\DirectCosts;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateCarousel extends FormRequest
+class CreateDirectCosts extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,11 @@ class CreateCarousel extends FormRequest
     public function rules(): array
     {
         return [
-            'carousel'=>'required|in:active,inactive',
-            'discount'=>'required|numeric|between:0,99999.99',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'product_id' => 'required|integer|exists:products,id',
+            'name' => 'required|string|max:100',
+            'description' => 'required|string',
+            'amount' => 'required|numeric|between:0,99999999.99',
+            'price' => 'required|numeric|between:0,99999999.99',
+            'categories_direct_costs_id' => 'required|integer|exists:categories_direct_costs,id'
         ];
     }
 }

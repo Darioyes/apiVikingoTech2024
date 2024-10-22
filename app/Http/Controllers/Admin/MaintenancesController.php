@@ -13,6 +13,8 @@ use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
+//esto se importa para escribir sql crudo
+use Illuminate\Support\Facades\DB;
 
 class MaintenancesController extends Controller
 {
@@ -215,4 +217,74 @@ class MaintenancesController extends Controller
             return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
         }
     }
+
+    /**
+     * Search maintenance by name or description.
+     * @param string $maintenance Maintenance name or description (required).
+     * @return JsonResponse
+     */
+
+    public function searchMaintenance($maintenance)
+    {
+        try {
+            //buscamos el mantenimiento por nombre o descripción
+            $maintenance = maintenances::with(['users'])
+                                        ->where('product', 'LIKE', "%$maintenance%")
+                                        ->orWhere('description', 'LIKE', "%$maintenance%")
+                                        ->orWhereHas('users', function($query) use ($maintenance) {
+                                            $query->where('name', 'LIKE', "%$maintenance%")
+                                                  ->orWhere('lastname', 'LIKE', "%$maintenance%");
+                                        })
+                                        ->get();
+            return ApiResponse::success('Mantenimiento', Response::HTTP_OK, $maintenance);
+
+        } catch(ModelNotFoundException $e){
+            return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * query's to get the maintenance
+     */
+
+     public function getInfoBasicMaintenance(){
+        try {
+            //pasamos a español la base de datos
+            DB::statement("SET lc_time_names = 'es_ES';");
+            //realizamos consulta para validar el promedio de price
+            $average_price = maintenances::avg('price');
+            //realizamos una consulta para obtener el total de manteminientos
+            $total_maintenances = maintenances::count();
+            //Realizar consulta para obtener el total de mantenimientos por mes
+            $total_maintenances_mes = DB::select("SELECT COUNT(*) as total, MONTHNAME(created_at) AS month FROM maintenances GROUP BY MONTHNAME( created_at);");
+            //realizamos una consulta para obtener el total de mantenimientos activos
+            $total_maintenances_progress = DB::select("SELECT advance, COUNT(*) as total FROM maintenances GROUP BY advance;");
+            //retornamos la suma de ventas por mes
+            $total_price_mes = DB::select("SELECT SUM(price) as total_price, MONTHNAME(created_at) AS month FROM maintenances GROUP BY MONTHNAME( created_at);");
+            //retornamos el promedio de ventas por mes
+            $average_price_mes = DB::select("SELECT AVG(price) as total_average, MONTHNAME(created_at) AS month FROM maintenances GROUP BY MONTHNAME( created_at);");
+            //mantenimientos que estan por arriba del promedio
+            $above_average = DB::select("SELECT product, description, price FROM maintenances WHERE price > (SELECT AVG(price) as average FROM maintenances);");
+            //realizar consulta para obtener el total de reparados y no reparados
+            $total_maintenances_repaired = DB::select("SELECT repaired, COUNT(*) as total FROM maintenances GROUP BY repaired;");
+            //realizar consulta de las garantias
+            $total_maintenances_warranty = DB::select("SELECT warranty, COUNT(*) as total FROM maintenances GROUP BY warranty;");
+
+            return ApiResponse::success('Información básica de mantenimientos', Response::HTTP_OK,
+            [
+            'average_price' => $average_price,
+            'total_maintenances' => $total_maintenances,
+            'total_maintenances_mes' => $total_maintenances_mes,
+            'total_maintenances_progress' => $total_maintenances_progress,
+            'total_price_mes' => $total_price_mes,
+            'average_price_mes' => $average_price_mes,
+            'above_average' => $above_average,
+            'total_maintenances_repaired' => $total_maintenances_repaired,
+            'total_maintenances_warranty' => $total_maintenances_warranty
+            ]);
+
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
+        }
+     }
 }

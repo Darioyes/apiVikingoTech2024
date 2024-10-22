@@ -12,6 +12,7 @@ use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Admin\products as ProductsAdmin;
+use Illuminate\Support\Facades\DB;
 
 
 class SalesController extends Controller
@@ -199,5 +200,52 @@ class SalesController extends Controller
             return false;
         }
         return true;
+    }
+
+    public function getInfoBasicSales(){
+        try {
+            //pasamos a español la base de datos
+            DB::statement("SET lc_time_names = 'es_ES';");
+            //contar el total de productos vendidos (amount)
+            $totalProducts = sales::sum('amount');
+            $sales = sales::count();
+            $total = sales::sum('sale_total');
+            $cost = sales::sum('cost_total');
+            //promedio de ventas
+            $avgSales = sales::avg('sale_total');
+            //ganancias brutas
+            $grossProfits = $total - $cost;
+            //ventas por mes
+            $salesMonth = DB::select("SELECT SUM(sale_total) as sales_month, SUM(cost_total) as cost_total, MONTHNAME(created_at) AS month FROM sales GROUP BY MONTHNAME( created_at);");
+            //top 10 de productos más vendidos
+            $topProducts = DB::select("SELECT products.name, SUM(sales.amount) as total_amount, SUM(sales.sale_total) AS total_sales FROM sales INNER JOIN products ON sales.product_id = products.id GROUP BY products.name ORDER BY total_sales DESC LIMIT 10;");
+            //productos que estan por arriba del promedio
+            $above_average = DB::select("SELECT p.name as product, SUM(s.sale_total) as sales_top FROM sales AS s INNER JOIN products AS p ON s.product_id = p.id GROUP BY s.product_id HAVING SUM(s.sale_total) > (SELECT AVG(sale_total) FROM sales);");
+            //productos más vendidos
+            $topSales = DB::select("SELECT p.name, SUM(s.sale_total) as salestotal FROM sales AS s INNER JOIN products AS p ON s.product_id = p.id GROUP BY s.product_id ORDER BY salestotal DESC LIMIT 10;");
+            //productos menos vendidos
+            $lessSold = DB::select("SELECT p.name, SUM(s.sale_total) as salestotal FROM sales AS s INNER JOIN products AS p ON s.product_id = p.id GROUP BY s.product_id ORDER BY salestotal ASC LIMIT 10;");
+            //cantidad de ventas por aprobar
+            $salesToApprove = sales::where('confirm_sale', 'false')->count();
+
+            return ApiResponse::success('Información básica de ventas', Response::HTTP_OK,
+            [
+                'totalProducts' => $totalProducts,
+                'total' => $total,
+                'cost' => $cost,
+                'sales' => $sales,
+                'avgSales' => $avgSales,
+                'grossProfits' => $grossProfits,
+                'salesMonth' => $salesMonth,
+                'topProducts' => $topProducts,
+                'above_average' => $above_average,
+                'topSales' => $topSales,
+                'lessSold' => $lessSold,
+                'salesToApprove' => $salesToApprove
+
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::error(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        }
     }
 }

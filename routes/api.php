@@ -71,10 +71,16 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de productos
     //ruta tipo recurso de products
     Route::resource('products', ProductsController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta de información básica de productos
+    Route::get('basicproducts',[ProductsController::class,'getInfoBasicProducts']);
 
     //?rutas de mantenimientos
     //ruta tipo recurso de maintenances
     Route::resource('maintenances', MaintenancesController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta de busqueda por nombre o descripión de mantenimiento
+    Route::get('searchmaintenance/{maintenance}',[MaintenancesController::class,'searchMaintenance']);
+    //ruta para obtener infirmación básica de mantenimientos
+    Route::get('basicmaintenance',[MaintenancesController::class,'getInfoBasicMaintenance']);
 
     //?rutas de carrusel
     //ruta tipo recurso de carousel
@@ -95,10 +101,14 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de ventas
     //rutas tipo recurso de sales
     Route::resource('sales', SalesController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta de información básica de ventas
+    Route::get('basicsales',[SalesController::class,'getInfoBasicSales']);
 
     //?rutas de ordenes de compra
     //ruta tipo recurso de purchaseOrders
     Route::resource('purchaseorders', PurchaseOrdersController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta para obtener la informaciòn básica de las ordenes de compra
+    Route::get('basicpurchaseorders',[PurchaseOrdersController::class,'getInfoBasicPurcharseOrders']);
 
     //?rutas de transacciones
     //ruta tipo recurso de transactions

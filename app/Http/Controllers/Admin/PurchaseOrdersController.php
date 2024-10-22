@@ -13,6 +13,7 @@ use App\Models\Admin\transactions;
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseOrdersController extends Controller
 {
@@ -214,6 +215,28 @@ class PurchaseOrdersController extends Controller
             $transaction->where('purchase_orders_id', $id)->delete();
 
             return ApiResponse::success('Orden de compra eliminada', Response::HTTP_OK, []);
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function getInfoBasicPurcharseOrders(){
+        try{
+            //obtenemos la cantidad de ordenes de compra
+            $countPurcharseOrders = purchaseOrders::count();
+            //obtenemos la cantidad de la compra al proveedor
+            $countPurcharse = purchaseOrders::sum('purcharse');
+            //obtenemos la cantidad de prodcutos comprados
+            $countProducts = purchaseOrders::sum('amount');
+            //obtenemos la agrupación de porveedores con la cantidad comprada
+            $suppliersPurcharse = DB::select( "SELECT s.name as supplier, SUM(po.purcharse) as purcharse FROM purchase_orders AS po INNER JOIN suppliers AS s ON po.suppliers_id = s.id GROUP BY supplier" );
+
+            return ApiResponse::success('Información básica de ordenes de compra', Response::HTTP_OK, [
+                'countPurcharseOrders' => $countPurcharseOrders,
+                'countPurcharse' => $countPurcharse,
+                'countProducts' => $countProducts,
+                'suppliersPurcharse' => $suppliersPurcharse
+            ]);
         }catch(ModelNotFoundException $e){
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }

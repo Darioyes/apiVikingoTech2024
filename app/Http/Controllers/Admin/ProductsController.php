@@ -12,6 +12,7 @@ use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
@@ -232,6 +233,29 @@ class ProductsController extends Controller
         } catch (ModelNotFoundException $e) {
             return ApiResponse::error('Producto no encontrado', Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getInfoBasicProducts(){
+        try {
+            //traemos la cantidad de productos
+            $totalProducts = ProductsAdmin::count();
+            //traemos el total del precio de los productos
+            $totalPrice = ProductsAdmin::sum('sale_price');
+            //traemos el costo total de los productos
+            $totalCost = ProductsAdmin::sum('cost_price');
+            //traemos el total del stock de los productos
+            $totalStock = ProductsAdmin::sum('stock');
+
+            return ApiResponse::success('Productos', Response::HTTP_OK,[
+                'totalProducts' => $totalProducts,
+                'totalPrice' => $totalPrice,
+                'totalCost' => $totalCost,
+                'totalStock' => $totalStock
+            ]);
+
+        } catch(\Exception $e){
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

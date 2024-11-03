@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 //esto se importa para escribir sql crudo
 use Illuminate\Support\Facades\DB;
+use Spatie\FlareClient\Api;
 
 class UsersController extends Controller
 {
@@ -188,7 +189,10 @@ class UsersController extends Controller
         try{
 
 
-            //verificamos el guard que sea admin
+            //EL GUARD ES PARA SABER SI EL USUARIO ES ADMIN O USUARIO
+            //aca se almacena en el guard dependiendo si el usuario es admin o usuario
+            //si el has('users') es true entonces el guard es admin si no es usuario
+            //si el has('admin') es true entonces el guard es admin si no es usuario
             $guard = $request->has('users') ? 'admin' : 'user';
             //buscamos en la base de deatos con attempt que el email y el password sean correctos
             if(!Auth::guard($guard)->attempt($request->only('email','password'))){
@@ -196,9 +200,18 @@ class UsersController extends Controller
                 return ApiResponse::error('Usuario y/o contraseña incorrectas', Response::HTTP_UNAUTHORIZED);
             }
 
+
+
             $user = UserAdmin::where('email', $request->email)->first();
             //$user = Auth::guard($guard)->user();
 
+            //inicializamos la tabla personal_access_tokens
+            $tokenAccess = DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->first();
+            //validamos si hay un token de ese usuario en la tabla personal_access_tokens en la columna tokeneable_id con el id del usuario
+            if($tokenAccess){
+                //si hay un token de ese usuario lo eliminamos
+                DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
+            }
 
             if ( $user->vikingo_roles_id === 2) {
                 // Si '2 o administrador' no es true, el usuario no tiene permisos de administrador
@@ -211,9 +224,6 @@ class UsersController extends Controller
 
         }catch(ModelNotFoundException $e){
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
-        }catch(\Exception $e){
-            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-
         }
 
     }
@@ -278,6 +288,32 @@ class UsersController extends Controller
             //si hay un error devolvemos el error
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    //funcion para validar si hay un token
+    public function checkToken($id, $token=0){
+        try{
+            //buscamos si hay un token y si este es igual al token que nos llega por parametro
+            $tokenAccess = DB::table('personal_access_tokens')->where('tokenable_id', $id)->first();
+            //primero validamos si hay un token
+            //dd($token);
+            $tokenApi = $tokenAccess->token;
+            if(!$tokenAccess){
+                dd(!$tokenAccess);
+                return ApiResponse::error(Response::HTTP_UNAUTHORIZED, false);
+            }
+
+            //si el token es igual al token que nos llega por parametro devolvemos un true
+            if($tokenApi === $token){
+                return ApiResponse::success( Response::HTTP_OK, ['token' => true]);
+            }
+            //si no devolvemos un false
+            return ApiResponse::error(Response::HTTP_UNAUTHORIZED, ['token' => false]);
+
+        }catch (ModelNotFoundException $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+
     }
 
 }

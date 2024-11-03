@@ -48,6 +48,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('genderavg',[UsersController::class,'genderAVG']);
     //ruta de logout de users
     Route::post('vikingouser/logout', [UsersController::class, 'logout']);
+    //ruta para verificar si hay un token activo
+    Route::get('verifytoken/{id}/{token}', [UsersController::class, 'checkToken']);
 
     //?rutas de categorias de productos
     //ruta tipo recurso de categoriesProducts

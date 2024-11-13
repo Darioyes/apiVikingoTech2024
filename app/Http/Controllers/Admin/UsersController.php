@@ -291,24 +291,15 @@ class UsersController extends Controller
     }
 
     //funcion para validar si hay un token
-    public function checkToken($id, $token=0){
+    public function checkToken($id){
         try{
-            //buscamos si hay un token y si este es igual al token que nos llega por parametro
-            $tokenAccess = DB::table('personal_access_tokens')->where('tokenable_id', $id)->first();
-            //primero validamos si hay un token
-            //dd($token);
-            $tokenApi = $tokenAccess->token;
-            if(!$tokenAccess){
-                dd(!$tokenAccess);
-                return ApiResponse::error(Response::HTTP_UNAUTHORIZED, false);
+            //consultar nombre de usuario con el id
+            $user = UserAdmin::findOrFail($id);
+            //si el usuario no existe devolvemos un error
+            if(!$user){
+                return ApiResponse::error('Usuario no encontrado', Response::HTTP_NOT_FOUND);
             }
-
-            //si el token es igual al token que nos llega por parametro devolvemos un true
-            if($tokenApi === $token){
-                return ApiResponse::success( Response::HTTP_OK, ['token' => true]);
-            }
-            //si no devolvemos un false
-            return ApiResponse::error(Response::HTTP_UNAUTHORIZED, ['token' => false]);
+            return ApiResponse::success('Usuario encontrado', Response::HTTP_OK,$user->id);
 
         }catch (ModelNotFoundException $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);

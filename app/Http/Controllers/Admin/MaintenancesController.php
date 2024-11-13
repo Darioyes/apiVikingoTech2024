@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 //esto se importa para escribir sql crudo
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MaintenancesController extends Controller
 {
@@ -28,7 +29,8 @@ class MaintenancesController extends Controller
             if(maintenances::count() === 0){
                 return ApiResponse::success('No hay mantenimientos creados', Response::HTTP_OK, []);
             }
-            $maintenances = maintenances::with(['users'])
+            $maintenances = maintenances::select('product','price','advance','image1'/*,'users_id'*/)
+                                        ->with(['users'])
                                         ->orderBy('product', 'asc')
                                         ->paginate(10);
             return ApiResponse::success('Mantenimientos', Response::HTTP_OK, $maintenances);
@@ -231,11 +233,12 @@ class MaintenancesController extends Controller
             $maintenance = maintenances::with(['users'])
                                         ->where('product', 'LIKE', "%$maintenance%")
                                         ->orWhere('description', 'LIKE', "%$maintenance%")
+                                        ->orWhere('advance', 'LIKE', "%$maintenance%")
                                         ->orWhereHas('users', function($query) use ($maintenance) {
                                             $query->where('name', 'LIKE', "%$maintenance%")
                                                   ->orWhere('lastname', 'LIKE', "%$maintenance%");
                                         })
-                                        ->get();
+                                        ->paginate(10);
             return ApiResponse::success('Mantenimiento', Response::HTTP_OK, $maintenance);
 
         } catch(ModelNotFoundException $e){
@@ -286,5 +289,21 @@ class MaintenancesController extends Controller
         }catch(ModelNotFoundException $e){
             return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
         }
-     }
+    }
+    public function getMaintenanceProgress($day){
+        try{
+            $startDay = Carbon::now()->subDays($day);
+
+            //pasamos a español la base de datos
+            DB::statement("SET lc_time_names = 'es_ES';");
+            //traemos un group by de los mantenimientos desde el dia actual menos 7 dias atras
+            $total_maintenances_progress = DB::select("SELECT advance, COUNT(*) as total FROM maintenances WHERE created_at >= '$startDay' GROUP BY advance;");
+
+            // //realizamos una consulta para obtener el total de mantenimientos activos
+            // $total_maintenances_progress = DB::select("SELECT advance, COUNT(*) as total FROM maintenances GROUP BY advance;");
+            return ApiResponse::success('Mantenimientos activos', Response::HTTP_OK, $total_maintenances_progress);
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
+        }
+    }
 }

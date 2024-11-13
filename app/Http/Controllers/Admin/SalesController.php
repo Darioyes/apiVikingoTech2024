@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\sales;
 use App\Models\Admin\transactions;
+use App\Models\Admin\maintenances;
 
 use App\Http\Requests\Sales\CreateSales;
 use App\Http\Requests\Sales\UpdateSales;
@@ -13,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Admin\products as ProductsAdmin;
 use Illuminate\Support\Facades\DB;
+//clase para manejar fechas
+use Carbon\Carbon;
 
 
 class SalesController extends Controller
@@ -246,6 +249,31 @@ class SalesController extends Controller
             ]);
         } catch (ModelNotFoundException $e) {
             return ApiResponse::error(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        }
+    }
+
+    public function getSummary( $day){
+        try{
+            //usamos la clase Carbon para calcular la fecha de inicio restando los dias proporcionados
+            $startDay = Carbon::now()->subDays($day);
+
+            //traemos las ventas desde el dia actual menos 7 dias atras
+            $sales = sales::where('created_at', '>=', $startDay)->sum('sale_total');
+            //traemos los mantenimientos desde el dia actual menos 7 dias atras
+            $maintenances = maintenances::where('created_at', '>=', $startDay)->sum('price');
+            //treamos los costos directos desde el dia actual menos 7 dias atras
+            $directCosts = DB::table('direct_costs')->where('created_at', '>=', $startDay)->sum('price');
+            //traemos los costos indirectos desde el dia actual menos 7 dias atras
+            $indirectCosts = DB::table('indirect_costs')->where('created_at', '>=', $startDay)->sum('price');
+            return ApiResponse::success('Listado básico',Response::HTTP_OK,[
+                'sales' => $sales,
+                'maintenances' => $maintenances,
+                'directCosts' => $directCosts,
+                'indirectCosts' => $indirectCosts
+            ]);
+
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
 }

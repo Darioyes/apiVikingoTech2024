@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\IndirectCostsController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\PurchaseOrdersController;
 use App\Http\Controllers\Admin\TransactionsController;
+use App\Http\Controllers\Admin\General;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //ruta de logout de users
     Route::post('vikingouser/logout', [UsersController::class, 'logout']);
     //ruta para verificar si hay un token activo
-    Route::get('verifytoken/{id}/{token}', [UsersController::class, 'checkToken']);
+    Route::get('verifytoken/{id}', [UsersController::class, 'checkToken']);
 
     //?rutas de categorias de productos
     //ruta tipo recurso de categoriesProducts
@@ -83,6 +84,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('searchmaintenance/{maintenance}',[MaintenancesController::class,'searchMaintenance']);
     //ruta para obtener infirmación básica de mantenimientos
     Route::get('basicmaintenance',[MaintenancesController::class,'getInfoBasicMaintenance']);
+    //ruta para obtener el progreso del mantenimiento
+    Route::get('progressmaintenance/{day}',[MaintenancesController::class,'getMaintenanceProgress']);
 
     //?rutas de carrusel
     //ruta tipo recurso de carousel
@@ -115,5 +118,9 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de transacciones
     //ruta tipo recurso de transactions
     Route::resource('transactions', TransactionsController::class)->only(['index', 'show']);
+
+    //?rutas de summary frontend
+    //ruta para obtener la información de la página de inicio
+    Route::get('summary/{day}',[SalesController::class,'getSummary']);
 
 });

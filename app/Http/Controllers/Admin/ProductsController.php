@@ -27,7 +27,7 @@ class ProductsController extends Controller
                 return ApiResponse::success('No hay productos creados', Response::HTTP_OK, []);
             }
             $products = ProductsAdmin::with(['categoriesProducts:id,name'])
-                                        ->orderBy('name', 'asc')
+                                        ->orderBy('stock', 'asc')
                                         ->paginate(10);
             return ApiResponse::success('Productos', Response::HTTP_OK, $products);
 
@@ -259,4 +259,26 @@ class ProductsController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function searchProduct($name){
+        try {
+            //buscamos el producto
+            $product = ProductsAdmin::with(['categoriesProducts:id,name'])
+                                    ->where('name', 'like', '%'.$name.'%')
+                                    ->orWhere('reference', 'like', '%'.$name.'%')
+                                    ->orWhere('description', 'like', '%'.$name.'%')
+                                    ->orWhereHas('categoriesProducts', function($query) use ($name){
+                                        $query->where('name', 'like', '%'.$name.'%');
+                                    })
+                                    ->orderBy('stock', 'asc')
+                                    ->paginate(10);
+            //retornamos el producto
+            return ApiResponse::success('Producto', Response::HTTP_OK, $product);
+
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::error('Producto no encontrado', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+
 }

@@ -243,7 +243,7 @@ class UsersController extends Controller
                             ->where('name', 'LIKE',"%{$search}%")
                             ->orWhere('lastname','LIKE',"%{$search}%")
                             ->orWhere('email','LIKE',"%{$search}%")
-                            ->get();
+                            ->paginate(10);
             return ApiResponse::success('Usuarios encontrados',Response::HTTP_OK,$userSearch);
 
         }catch (ModelNotFoundException $e) {
@@ -253,12 +253,23 @@ class UsersController extends Controller
         }
     }
 
-    public function totalUsers(){
+    public function dataBasicUsers(){
         try{
 
             $totalUser = UserAdmin::count();
+            //contamos los usuarios por genero hombre
+            $totalGenderMale = DB::select("SELECT COUNT(*) as total_male  FROM users WHERE gender = 'male';");
+            //contamos los usuarios por genero mujer
+            $totalGenderFemale = DB::select("SELECT COUNT(*) as total_famele  FROM users WHERE gender = 'famele';");
+            //promedio edad usuarios
+            $averageAge = DB::select("SELECT ROUND(AVG(TIMESTAMPDIFF(YEAR, birthday, CURDATE())),1) AS average_age FROM users");
 
-            return ApiResponse::success('Usuarios totales',Response::HTTP_OK,$totalUser);
+            return ApiResponse::success('Resumen data',Response::HTTP_OK,[
+                'totalUsuarios'=>$totalUser,
+                'totalHombres'=>$totalGenderMale,
+                'totalMujeres'=>$totalGenderFemale,
+                'promedioEdad'=>$averageAge
+            ]);
 
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

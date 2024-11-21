@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //ruta de busqueda por nombre o apellido de usuario
     Route::get('searchusers/{user}',[UsersController::class,'searchUser']);
     //ruta del total de usuarios
-    Route::get('userstotal',[UsersController::class,'totalUsers']);
+    Route::get('databasicusers',[UsersController::class,'dataBasicUsers']);
     //ruta total por genero de usuario
     Route::get('gender',[UsersController::class,'countGender']);
     //ruta de promedio de usuarios por genero
@@ -76,6 +76,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::resource('products', ProductsController::class)->only(['index', 'store', 'show','update','destroy']);
     //ruta de información básica de productos
     Route::get('basicproducts',[ProductsController::class,'getInfoBasicProducts']);
+    //ruta para obtener la busqueda de productos por nombre o descripción
+    Route::get('searchproducts/{product}',[ProductsController::class,'searchProduct']);
 
     //?rutas de mantenimientos
     //ruta tipo recurso de maintenances

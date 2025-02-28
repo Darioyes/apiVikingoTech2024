@@ -32,7 +32,7 @@ class SalesController extends Controller
 
             }
 
-            $sales = sales::with(['users','products'])
+            $sales = sales::with(['user','product'])
                         ->orderBy('created_at', 'asc')
                         ->paginate(10);
 
@@ -271,6 +271,55 @@ class SalesController extends Controller
                 'directCosts' => $directCosts,
                 'indirectCosts' => $indirectCosts
             ]);
+
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function getSumarySales($day){
+        try{
+            //usamos la clase Carbon para calcular la fecha de inicio restando los dias proporcionados
+            $startDay = Carbon::now()->subDays($day);
+
+            //treemos el total de las ventas desde el dia actual menos los $day proporcionados
+            $sales = sales::where('created_at', '>=', $startDay)->sum('sale_total');
+            //traemos el costo de ventas desde el dia actual menos los $day proporcionados
+            $cost = sales::where('created_at', '>=', $startDay)->sum('cost_total');
+            //traemos la cantidad de ventas desde el dia actual menos los $day proporcionados
+            $amount = sales::where('created_at', '>=', $startDay)->sum('amount');
+            //tremos el total de ventas por confirmar que esten en false desde el dia actual menos los $day proporcionados
+            $salesToApprove = sales::where('confirm_sale', 'false')->where('created_at', '>=', $startDay)->count();
+
+            return ApiResponse::success('Resumen ventas',Response::HTTP_OK,[
+                'sales' => $sales,
+                'cost' => $cost,
+                'amount' => $amount,
+                'salesToApprove' => $salesToApprove
+            ]);
+
+        }
+        catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function searchSales($name){
+        try {
+
+            $sales = sales::with(['user:id,name','product:id,name'])
+                        ->where('description', 'like', '%'.$name.'%')
+                        ->orWhere('shopping_cart', 'like', '%'.$name.'%')
+                        ->orWhereHas('user', function($query) use ($name){
+                            $query->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->orWhereHas('product', function($query) use ($name){
+                            $query->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->orderBy('created_at', 'asc')
+                        ->paginate(10);
+
+            return ApiResponse::success('Lista de ventas', Response::HTTP_OK, $sales);
 
         }catch(ModelNotFoundException $e){
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);

@@ -21,13 +21,13 @@ class sales extends Model
     ];
 
     //relacion muchos a uno con la tabla users
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
     //relacion muchos a uno con la tabla products
-    public function products()
+    public function product()
     {
         return $this->belongsTo(products::class);
     }

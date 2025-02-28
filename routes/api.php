@@ -96,6 +96,10 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de proveedores
     //ruta tipo recurso de suppliers
     Route::resource('suppliers', SuppliersController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta de busqueda por nombre de proveedor
+    Route::get('searchsuppliers/{supplier}',[SuppliersController::class,'searchSuppliers']);
+    //ruta de información básica de proveedores
+    Route::get('basicsuppliers',[SuppliersController::class,'infoBasicSuppliers']);
 
     //?rutas de costos directos
     //ruta tipo recurso de directCosts
@@ -110,6 +114,10 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::resource('sales', SalesController::class)->only(['index', 'store', 'show','update','destroy']);
     //ruta de información básica de ventas
     Route::get('basicsales',[SalesController::class,'getInfoBasicSales']);
+    //ruta para obtener la busqueda de ventas por busqueda especifica
+    Route::get('searchsales/{sale}',[SalesController::class,'searchSales']);
+    //ruta para obtener el resumen de ventas
+    Route::get('sumarysales/{day}',[SalesController::class,'getSumarySales']);
 
     //?rutas de ordenes de compra
     //ruta tipo recurso de purchaseOrders
@@ -120,6 +128,18 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de transacciones
     //ruta tipo recurso de transactions
     Route::resource('transactions', TransactionsController::class)->only(['index', 'show']);
+    //ruta para obtener el resumen de transacciones
+    Route::get('sumarytransactions',[TransactionsController::class,'sumaryTransactions']);
+    //ruta para obtener los movimientos de las transacciones de usuarios
+    Route::get('transactionsusers',[TransactionsController::class,'transactionsUsers']);
+    //ruta para obtener los movimientos de las transacciones de mantenimientos
+    Route::get('transactionsmaintenance',[TransactionsController::class,'transactionsMaintenance']);
+    //ruta para obtener los movimientos de las transacciones de ordenes de compra
+    Route::get('transactionspurchaseorders',[TransactionsController::class,'transactionsPurchaseOrders']);
+    //ruta para obtener los movimientos de las transacciones de costos directos
+    Route::get('transactionsdirectcosts',[TransactionsController::class,'transactionsDirectCosts']);
+    //ruta para obtener los movimientos de las transacciones de costos indirectos
+    Route::get('transactionsindirectcosts',[TransactionsController::class,'transactionsIndirectCosts']);
 
     //?rutas de summary frontend
     //ruta para obtener la información de la página de inicio

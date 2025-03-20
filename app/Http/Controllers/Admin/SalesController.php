@@ -307,7 +307,7 @@ class SalesController extends Controller
     public function searchSales($name){
         try {
 
-            $sales = sales::with(['user:id,name','product:id,name'])
+            $sales = sales::with(['user:id,name','product:id,name']) //esto me traera solo el id y el nombre del usuario y del producto
                         ->where('description', 'like', '%'.$name.'%')
                         ->orWhere('shopping_cart', 'like', '%'.$name.'%')
                         ->orWhereHas('user', function($query) use ($name){

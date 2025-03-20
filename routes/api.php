@@ -104,10 +104,14 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de costos directos
     //ruta tipo recurso de directCosts
     Route::resource('directcosts', DirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta de search por nombre de costos directos
+    Route::get('searchdirectcosts/{directcost}',[DirectCostsController::class,'searchDirectCosts']);
 
     //?rutas de costos indirectos
     //ruta tipo recurso de indirectCosts
     Route::resource('indirectcosts', IndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
+    //rutra de search de indirectCosts
+    Route::get('searchindirectcosts/{indirectcost}',[IndirectCostsController::class,'searchindirectCosts']);
 
     //?rutas de ventas
     //rutas tipo recurso de sales

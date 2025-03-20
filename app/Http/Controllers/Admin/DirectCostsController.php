@@ -124,4 +124,24 @@ class DirectCostsController extends Controller
             return ApiResponse::error(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
     }
+
+    public function searchDirectCosts($name)
+    {
+        try {
+
+            $directCosts = directCosts::with(['categories_direct_costs:id,name'])
+                        ->where('name', 'like', '%'.$name.'%')
+                        ->orWhere('description', 'like', '%'.$name.'%')
+                        ->orWhereHas('categories_direct_costs', function($query) use ($name){
+                            $query->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->orderBy('created_at', 'asc')
+                        ->paginate(10);
+
+            return ApiResponse::success('Lista de costos directos', Response::HTTP_OK, $directCosts);
+
+        } catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
 }

@@ -29,9 +29,8 @@ class MaintenancesController extends Controller
             if(maintenances::count() === 0){
                 return ApiResponse::success('No hay mantenimientos creados', Response::HTTP_OK, []);
             }
-            $maintenances = maintenances::select('product','price','advance','image1'/*,'users_id'*/)
-                                        ->with(['users'])
-                                        ->orderBy('product', 'asc')
+            $maintenances = maintenances::with(['users:id,name,lastname'])
+                                        ->orderBy('updated_at', 'desc')
                                         ->paginate(10);
             return ApiResponse::success('Mantenimientos', Response::HTTP_OK, $maintenances);
 

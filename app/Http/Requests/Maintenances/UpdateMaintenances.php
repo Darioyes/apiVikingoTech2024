@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Maintenances;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMaintenances extends FormRequest
 {
@@ -28,10 +29,26 @@ class UpdateMaintenances extends FormRequest
             'reference' => 'nullable|string|max:100',
             'price' => 'required|numeric|between:0,99999999.99',
             'delivery_date' => 'nullable|date',
-            'image1' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'image2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'image3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'image4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image1' => [
+                'nullable',
+                Rule::when(request()->hasFile('image1'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),
+                Rule::when(!request()->has('keep_image1') && !request()->hasFile('image1'), ['prohibited'])
+            ],
+            'image2' => [
+                'nullable',
+                Rule::when(request()->hasFile('image2'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),
+                Rule::when(!request()->has('keep_image2') && !request()->hasFile('image2'), ['prohibited'])
+            ],
+            'image3' => [
+                'nullable',
+                Rule::when(request()->hasFile('image3'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),
+                Rule::when(!request()->has('keep_image3') && !request()->hasFile('image3'), ['prohibited'])
+            ],
+            'image4' => [
+                'nullable',
+                Rule::when(request()->hasFile('image4'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),
+                Rule::when(!request()->has('keep_image4') && !request()->hasFile('image4'), ['prohibited'])
+            ],
             'advance' => 'required|in:joined,in_progress,authorization,finalized',
             'repaired'=> 'nullable|string',
             'warranty'=> 'nullable|string',

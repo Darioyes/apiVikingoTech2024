@@ -32,8 +32,8 @@ class CreateMaintenances extends FormRequest
             'image3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'image4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'advance' => 'required|in:joined,in_progress,authorization,finalized',
-            'repaired'=> 'nullable|boolean',
-            'warranty'=> 'nullable|boolean',
+            'repaired'=> 'nullable|string',
+            'warranty'=> 'nullable|string',
             'users_id' => 'required|integer|exists:users,id',
         ];
     }

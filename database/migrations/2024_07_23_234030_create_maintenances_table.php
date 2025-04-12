@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('product', 100);
             $table->text('description');
             $table->string('reference', 100)->nullable();
-            $table->decimal('price', 8, 2);
+            $table->decimal('price', 8, 2)->default(0);
+            $table->decimal('cost_price', 8, 2)->default(0);
             $table->date('delivery_date')->nullable();
             $table->string('image1', 100);
             $table->string('image2', 100)->nullable();

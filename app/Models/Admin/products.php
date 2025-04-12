@@ -18,6 +18,7 @@ class products extends Model
         'stock',
         'sale_price',
         'cost_price',
+        'visible',
         'image1',
         'image2',
         'image3',

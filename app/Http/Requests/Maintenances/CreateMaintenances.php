@@ -26,6 +26,7 @@ class CreateMaintenances extends FormRequest
             'description' => 'required|string|max:1000',
             'reference' => 'nullable|string|max:100',
             'price' => 'required|numeric|between:0,99999999.99',
+            'cost_price'=> 'required|numeric|between:0,99999999.99',
             'delivery_date' => 'nullable|date',
             'image1' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'image2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',

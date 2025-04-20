@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class updateRequest extends FormRequest
 {
@@ -31,7 +32,11 @@ class updateRequest extends FormRequest
             'phone1' => 'required|min:10|numeric|unique:users,phone1,' . $userId->id,
             'phone2' => 'nullable|min:10|numeric',
             'address' => 'nullable|min:5|max:255|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => [
+                'nullable',
+                Rule::when(request()->hasFile('image'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),
+                Rule::when(!request()->has('keep_image') && !request()->hasFile('image'), ['prohibited'])
+            ],
             'cities_id' => 'required|numeric|exists:cities,id',
             'vikingo_roles_id' => 'required|numeric|exists:vikingo_roles,id'
         ];

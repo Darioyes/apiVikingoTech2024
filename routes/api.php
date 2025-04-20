@@ -66,6 +66,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de ciudades
     //ruta tipo recurso de cities
     Route::resource('cities', CitiesController::class)->only(['index', 'store', 'show','update','destroy']);
+    //ruta de ciudades para el input
+    Route::get('citiesinput',[CitiesController::class,'citiesInput']);
 
     //?rutas de roles
     //ruta tipo recurso de roles

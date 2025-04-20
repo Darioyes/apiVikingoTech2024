@@ -33,6 +33,22 @@ class CitiesController extends Controller
         }
     }
 
+    public function citiesInput()
+    {
+        try {
+            //si no hay ciudades devolvemos el json vacio
+            if(CitiesAdmin::count() === 0){
+                return ApiResponse::success('No hay ciudades creadas', Response::HTTP_OK, []);
+            }
+            $cities = CitiesAdmin::orderBy('city', 'asc')
+            ->get(['id','city']);
+            return ApiResponse::success('Ciudades', Response::HTTP_OK, $cities);
+
+        } catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */

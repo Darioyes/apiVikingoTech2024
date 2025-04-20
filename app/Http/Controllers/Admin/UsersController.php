@@ -34,7 +34,7 @@ class UsersController extends Controller
 
             //buscamos todos los usuarios y los paginamos de 10 en 10
             $users = UserAdmin::with(['vikingo_roles:id,name_admin', 'cities:id,city'])
-            ->orderBy('id', 'desc')
+            ->orderBy('name', 'asc')
             ->paginate(10);
             //devolvemos la respuesta
             return ApiResponse::success('Usuarios registrados', Response::HTTP_OK, $users);

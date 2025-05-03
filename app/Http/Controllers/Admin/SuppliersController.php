@@ -51,7 +51,7 @@ class SuppliersController extends Controller
             $supplier = new suppliers($request->input());
             $supplier->save();
 
-            return ApiResponse::success('Proveedor creado', Response::HTTP_CREATED, $supplier);
+            return ApiResponse::success('Proveedor creado correctamente', Response::HTTP_CREATED, $supplier);
 
         } catch (\Exception $e) {
             return ApiResponse::error(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());

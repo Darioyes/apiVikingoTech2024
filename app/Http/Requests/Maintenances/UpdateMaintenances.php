@@ -30,6 +30,7 @@ class UpdateMaintenances extends FormRequest
             'price' => 'required|numeric|between:0,99999999.99',
             'cost_price' => 'required|numeric|between:0,99999999.99',
             'delivery_date' => 'nullable|date',
+            'created_at' => 'required|date',
             'image1' => [
                 'nullable',
                 Rule::when(request()->hasFile('image1'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),

@@ -16,6 +16,7 @@ class maintenances extends Model
         'price',
         'cost_price',
         'delivery_date',
+        'created_at',
         'image1',
         'image2',
         'image3',

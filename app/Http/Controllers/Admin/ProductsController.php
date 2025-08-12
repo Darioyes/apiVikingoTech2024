@@ -36,6 +36,23 @@ class ProductsController extends Controller
         }
     }
 
+        public function indexNoPaginate()
+    {
+        try {
+            //si no hay productos devolvemos el json vacio
+            if(ProductsAdmin::count() === 0){
+                return ApiResponse::success('No hay productos creados', Response::HTTP_OK, []);
+            }
+            $products = ProductsAdmin::with(['categoriesProducts:id,name'])
+                                        ->orderBy('name', 'asc')
+                                        ->get();
+            return ApiResponse::success('Productos', Response::HTTP_OK, $products);
+
+        } catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */

@@ -24,8 +24,8 @@ class UpdateSales extends FormRequest
         return [
             'description'=>'required',
             'amount'=>'required|numeric|between:0,9999999999.99',
-            'confirm_sale'=>'required|string|in:true,false',
-            'shopping_cart'=>'required|string|in:true,false',
+            'confirm_sale'=>'required|string|in:True,false',
+            // 'shopping_cart'=>'required|string|in:True,false',
             'user_id'=>'required|integer|exists:users,id',
             'product_id'=>'required|integer|exists:products,id',
         ];

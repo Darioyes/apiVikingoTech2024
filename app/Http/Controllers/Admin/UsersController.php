@@ -48,6 +48,32 @@ class UsersController extends Controller
         }
     }
 
+     public function indexNoPagination()
+    {
+        try{
+
+            //si no hay usuarios devolvemos el json vacio
+            if(UserAdmin::count() === 0){
+                return ApiResponse::success('No hay usuarios', Response::HTTP_OK, []);
+            }
+
+            //buscamos todos los usuarios y los paginamos de 10 en 10
+            $users = UserAdmin::with(['vikingo_roles:id,name_admin', 'cities:id,city'])
+            ->orderBy('name', 'asc')
+            ->get();
+            //devolvemos la respuesta
+            return ApiResponse::success('Usuarios registrados', Response::HTTP_OK, $users);
+
+        }
+        catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */

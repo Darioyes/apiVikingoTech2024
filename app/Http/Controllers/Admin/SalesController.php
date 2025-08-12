@@ -33,7 +33,7 @@ class SalesController extends Controller
             }
 
             $sales = sales::with(['user','product'])
-                        ->orderBy('created_at', 'asc')
+                        ->orderBy('created_at', 'desc')
                         ->paginate(10);
 
             return ApiResponse::success('Lista de ventas', Response::HTTP_OK, $sales);
@@ -49,7 +49,7 @@ class SalesController extends Controller
     {
         try {
             //validamos si hay stock suficiente para la venta
-            if(!$this->validateStock($request->input('product_id'), $request->input('amount'))){
+            if(!$this->validateStock($request->input('product_id'), $request->input('amount'),false,1)){
                 return ApiResponse::error('No hay stock suficiente para la venta', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
             //instanciamos el modelo de transactions para guardar la venta
@@ -99,7 +99,7 @@ class SalesController extends Controller
     public function show($id)
     {
         try {
-            $sale = sales::with(['users','products'])
+            $sale = sales::with(['user','product'])
                         ->findOrFail($id);
 
             return ApiResponse::success('Venta', Response::HTTP_OK, $sale);
@@ -115,8 +115,8 @@ class SalesController extends Controller
     {
         try {
              //validamos si hay stock suficiente para la venta
-             if(!$this->validateStock($request->input('product_id'), $request->input('amount'))){
-                return ApiResponse::error('No hay stock suficiente para la venta', Response::HTTP_INTERNAL_SERVER_ERROR);
+             if(!$this->validateStock($request->input('product_id'), $request->input('amount'), true,$id)){
+                return ApiResponse::error('No hay stock suficiente para la venta', Response::HTTP_BAD_REQUEST);
             }
             //treemos la venta que se quiere actualizar
             $sale = sales::findOrFail($id);
@@ -193,16 +193,28 @@ class SalesController extends Controller
     }
 
     //funcion para validar si hay stock suficiente para la venta
-    private function validateStock($product_id, $amount){
+    private function validateStock($product_id, $amount, $modify,$idSale){
         //traemos el producto
         $product = ProductsAdmin::findOrFail($product_id);
         //traemos el stock del producto
         $stock = $product->stock;
-        //validamos si el stock es menor al amount
-        if($stock < $amount){
-            return false;
+
+        if($modify == true) { 
+            $sale = sales::findOrFail($idSale);
+            $amountSale = $sale->amount;
+            $modifyAmount = $amountSale + $stock;
+            //dd($modifyAmount);
+            if($modifyAmount < $amount){
+                return false;
+            }
+            return true;
+        }else{
+            //validamos si el stock es menor al amount
+            if($stock < $amount){
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 
     public function getInfoBasicSales(){
@@ -325,4 +337,5 @@ class SalesController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+    
 }

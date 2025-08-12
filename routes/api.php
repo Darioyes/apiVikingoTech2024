@@ -51,6 +51,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::post('vikingouser/logout', [UsersController::class, 'logout']);
     //ruta para verificar si hay un token activo
     Route::get('verifytoken/{id}', [UsersController::class, 'checkToken']);
+    //ruta usuarios index no páginados
+    Route::get('users-nopaginate',[UsersController::class,'indexNoPagination']);
 
     //?rutas de categorias de productos
     //ruta tipo recurso de categoriesProducts
@@ -80,6 +82,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('basicproducts',[ProductsController::class,'getInfoBasicProducts']);
     //ruta para obtener la busqueda de productos por nombre o descripción
     Route::get('searchproducts/{product}',[ProductsController::class,'searchProduct']);
+    //ruta para todos los productos no páginados
+    Route::get('products-nopaginate',[ProductsController::class,'indexNoPaginate']);
 
     //?rutas de mantenimientos
     //ruta tipo recurso de maintenances
@@ -124,6 +128,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('searchsales/{sale}',[SalesController::class,'searchSales']);
     //ruta para obtener el resumen de ventas
     Route::get('sumarysales/{day}',[SalesController::class,'getSumarySales']);
+ 
 
     //?rutas de ordenes de compra
     //ruta tipo recurso de purchaseOrders

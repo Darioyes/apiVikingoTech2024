@@ -28,7 +28,7 @@ class CategoriesDirectCostsController extends Controller
             return ApiResponse::success('Categorias de costos directos', Response::HTTP_OK, $categories);
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Error, intente nuevamente');
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -110,5 +110,17 @@ class CategoriesDirectCostsController extends Controller
             return ApiResponse::error('Error al eliminar la categoria', Response::HTTP_BAD_REQUEST);
         }
 
+    }
+
+    public function searchCategoriesDirectCosts($category)
+    {
+        try{
+            $category = categoriesDirectCostsAdmin::where('name', 'like', "%{$category}%")
+                                                    ->orderBy('name', 'asc')
+                                                    ->paginate(10);
+            return ApiResponse::success('Categorias de costos directos encontradas', Response::HTTP_OK, $category);
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
+        }
     }
 }

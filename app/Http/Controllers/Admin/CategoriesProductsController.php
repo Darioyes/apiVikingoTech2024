@@ -139,4 +139,16 @@ class CategoriesProductsController extends Controller
 //         return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
 //     }
 // }
+
+    public function searchCategoriesProducts($category)
+    {
+        try {
+            $categoriesProducts = CategoriesProductsAdmin::where('name', 'LIKE', "%{$category}%")
+                                                        ->orderBy('name', 'asc')
+                                                        ->paginate(10);
+            return ApiResponse::success('Categorías encontradas', Response::HTTP_OK, $categoriesProducts);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

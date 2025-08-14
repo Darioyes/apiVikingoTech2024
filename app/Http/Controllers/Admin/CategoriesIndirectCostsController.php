@@ -110,4 +110,16 @@ class CategoriesIndirectCostsController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function searchCategoriesIndirectCosts($category)
+    {
+        try {
+            $categories = CategoriesIndirectCostsAdmin::where('name', 'like', "%{$category}%")
+                                                    ->orderBy('name', 'asc')
+                                                    ->paginate(10);
+            return ApiResponse::success('Categorias de costos indirectos', Response::HTTP_OK, $categories);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

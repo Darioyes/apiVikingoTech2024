@@ -58,6 +58,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //ruta tipo recurso de categoriesProducts
     Route::resource('categoriesproducts', CategoriesProductsController::class)->only(['index', 'store', 'show','update','destroy']);
     Route::get('searchcategoriesproducts/{category}', [CategoriesProductsController::class, 'searchCategoriesProducts']);
+    Route::get('categories/total', [CategoriesProductsController::class, 'getCategoriesTotalCategories']);
+
     //?rutas de categorias de costos directos
     //ruta tipo recurso de categoriesDirectCosts
     Route::resource('categoriesdirectcosts', CategoriesDirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);

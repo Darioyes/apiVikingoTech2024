@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\CategoriesProducts as CategoriesProductsAdmin;
+use App\Models\Admin\categoriesIndirectCosts as CategoriesIndirectCostsAdmin;
+use App\Models\Admin\categoriesDirectCosts as categoriesDirectCostsAdmin;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -147,6 +149,23 @@ class CategoriesProductsController extends Controller
                                                         ->orderBy('name', 'asc')
                                                         ->paginate(10);
             return ApiResponse::success('Categorías encontradas', Response::HTTP_OK, $categoriesProducts);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getCategoriesTotalCategories()
+    {
+        try {
+            $totalCategorias = CategoriesProductsAdmin::count();
+            $totalindirectCosts = CategoriesIndirectCostsAdmin::count();
+            $totalDirectCosts = categoriesDirectCostsAdmin::count();
+            return ApiResponse::success('Total de categorías encontradas', Response::HTTP_OK,
+            [
+            'totalProducts' => $totalCategorias,
+            'totalIndirectCosts' => $totalindirectCosts,
+            'totalDirectCosts' => $totalDirectCosts
+            ]);
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

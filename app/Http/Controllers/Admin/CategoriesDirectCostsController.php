@@ -123,4 +123,17 @@ class CategoriesDirectCostsController extends Controller
             return ApiResponse::error('Mantenimiento no encontrado', Response::HTTP_NOT_FOUND);
         }
     }
+
+    public function getAllCategoriesDirectCosts()
+    {
+        try{
+            $categories = categoriesDirectCostsAdmin::orderBy('name', 'asc')
+            ->get();
+            return ApiResponse::success('Categorias de costos directos', Response::HTTP_OK, $categories);
+        }catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }catch (ModelNotFoundException $e) {
+            return ApiResponse::error('Categoria no encontrada', Response::HTTP_NOT_FOUND);
+        }
+    }
 }

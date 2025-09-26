@@ -64,11 +64,13 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //ruta tipo recurso de categoriesDirectCosts
     Route::resource('categoriesdirectcosts', CategoriesDirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
     Route::get('searchcategoriesdirectcosts/{category}', [CategoriesDirectCostsController::class, 'searchCategoriesDirectCosts']);
+    Route::get('categoriesdirect/total', [CategoriesDirectCostsController::class, 'getAllCategoriesDirectCosts']);
 
     //?rutas de categorias de costos indirectos
     //ruta tipo recurso de categoriesIndirectCosts
     Route::resource('categoriesindirectcosts', CategoriesIndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
     Route::get('searchcategoriesindirectcosts/{category}', [CategoriesIndirectCostsController::class, 'searchCategoriesIndirectCosts']);
+    Route::get('categoriesdirect/total', [CategoriesIndirectCostsController::class, 'getAllCategoriesIndirectCosts']);
 
     //?rutas de ciudades
     //ruta tipo recurso de cities

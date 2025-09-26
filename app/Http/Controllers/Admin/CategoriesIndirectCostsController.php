@@ -122,4 +122,14 @@ class CategoriesIndirectCostsController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function getAllCategoriesIndirectCosts()
+    {
+        try {
+            $categories = CategoriesIndirectCostsAdmin::orderBy('name', 'asc')->get();
+            return ApiResponse::success('Categorias de costos indirectos', Response::HTTP_OK, $categories);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->enum('carousel', ['active', 'inactive'])->default('inactive');
             $table->double('discount', 5,2)->default(0)->nullable();
             $table->string('image', 100);
+            $table->string('image2', 100);
+            $table->string('image3', 100);
             $table->timestamps();
             $table->foreignId('product_id')->constrained('products')->onDelete('restrict')->onUpdate('cascade');
         });

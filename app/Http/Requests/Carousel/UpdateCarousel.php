@@ -25,6 +25,8 @@ class UpdateCarousel extends FormRequest
             'carousel'=>'required|in:active,inactive',
             'discount'=>'required|numeric|between:0,99999.99',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'product_id' => 'required|integer|exists:products,id',
         ];
     }

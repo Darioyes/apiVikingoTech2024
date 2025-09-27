@@ -12,6 +12,8 @@ class carousel extends Model
         'carousel',
         'discount',
         'image',
+        'image2',
+        'image3',
         'product_id',
     ];
 

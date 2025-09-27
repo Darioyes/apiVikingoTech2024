@@ -50,6 +50,14 @@ class CarouselController extends Controller
             $path = $request->file('image')->store('public/images/carousel');
             //guardamos la ruta en la base de datos
             $carousel->image = $path;
+            //subimos la image2 del producto y guardamo la ruta en la variable path
+            $path2 = $request->file('image2')->store('public/images/carousel');
+            //guardamos la ruta en la base de datos
+            $carousel->image2 = $path2;
+            //subimos la image3 del producto y guardamo la ruta en la variable path
+            $path3 = $request->file('image3')->store('public/images/carousel');
+            //guardamos la ruta en la base de datos
+            $carousel->image3 = $path3;
             //guardamos el producto
             $carousel->save();
             //devolvemos la respuesta
@@ -85,6 +93,8 @@ class CarouselController extends Controller
         try {
             $carousel = carousel::findOrFail($id);
             $image = $carousel->image;
+            $image2 = $carousel->image2;
+            $image3 = $carousel->image3;
             $carousel->fill($request->all());
 
             //si viene la image del carrusel
@@ -98,8 +108,32 @@ class CarouselController extends Controller
                 //guardamos la ruta en la base de datos
                 $carousel->image = $path;
             }
+            //si viene la image2 del carrusel
+            if($request->hasFile('image2')&&$request->file('image2')->isValid()){
+                if($image2){
+                    //borramos la imagen anterior
+                    Storage::delete($image2);
+                }
+                //subimos la nueva imagen
+                $path2 = $request->file('image2')->store('public/images/carousel');
+                //guardamos la ruta en la base de datos
+                $carousel->image2 = $path2;
+            }
+            //si viene la image3 del carrusel
+            if($request->hasFile('image3')&&$request->file('image3')->isValid()){
+                if($image3){
+                    //borramos la imagen anterior
+                    Storage::delete($image3);
+                }
+                //subimos la nueva imagen
+                $path3 = $request->file('image3')->store('public/images/carousel');
+                //guardamos la ruta en la base de datos
+                $carousel->image3 = $path3;
+            }
             //guardamos todo menos la imagen ya que se guardo anteriormente
             $carousel->fill($request->except('image'));
+            $carousel->fill($request->except('image2'));
+            $carousel->fill($request->except('image3'));
             //guardamos el carrusel
             $carousel->save();
             return ApiResponse::success('Carrusel actualizado', Response::HTTP_OK, $carousel);

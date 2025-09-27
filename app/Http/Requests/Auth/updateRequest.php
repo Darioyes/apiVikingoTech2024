@@ -25,6 +25,7 @@ class updateRequest extends FormRequest
         $userId = $this->route('user'); // Obtén el ID del usuario que se está actualizando desde la ruta
         //dd($userId);
         return [
+            'status' => 'required|in:active,inactive',
             'name' => 'required|min:3|max:45',
             'lastname' => 'required|min:3|max:45',
             'gender' => 'required|min:4|max:6',

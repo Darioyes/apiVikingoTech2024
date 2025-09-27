@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('reference', 100)->unique();
             $table->string('barcode',100)->nullable()->unique();
             $table->text('description');
-            $table->decimal('stock', 6, 2)->nullable();
-            $table->decimal('sale_price', 10, 2);
-            $table->decimal('cost_price', 10, 2)->nullable();
+            $table->decimal('stock', 8, 2)->nullable();
+            $table->decimal('sale_price', 15, 2);
+            $table->decimal('cost_price', 15, 2)->nullable();
             $table->enum('visible', ['true', 'false'])->default('true');
             $table->string('image1', 255);
             $table->string('image2', 255)->nullable();

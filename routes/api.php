@@ -70,7 +70,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //ruta tipo recurso de categoriesIndirectCosts
     Route::resource('categoriesindirectcosts', CategoriesIndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
     Route::get('searchcategoriesindirectcosts/{category}', [CategoriesIndirectCostsController::class, 'searchCategoriesIndirectCosts']);
-    Route::get('categoriesdirect/total', [CategoriesIndirectCostsController::class, 'getAllCategoriesIndirectCosts']);
+    Route::get('categoriesindirect/total', [CategoriesIndirectCostsController::class, 'getAllCategoriesIndirectCosts']);
 
     //?rutas de ciudades
     //ruta tipo recurso de cities
@@ -119,12 +119,16 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::resource('directcosts', DirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
     //ruta de search por nombre de costos directos
     Route::get('searchdirectcosts/{directcost}',[DirectCostsController::class,'searchDirectCosts']);
+    //ruta para obtener el resumen de costos directos
+    Route::get('sumarydirectcosts',[DirectCostsController::class,'sumaryDirectCosts']);
 
     //?rutas de costos indirectos
     //ruta tipo recurso de indirectCosts
     Route::resource('indirectcosts', IndirectCostsController::class)->only(['index', 'store', 'show','update','destroy']);
     //rutra de search de indirectCosts
     Route::get('searchindirectcosts/{indirectcost}',[IndirectCostsController::class,'searchindirectCosts']);
+    //ruta para obtener el resumen de costos indirectos
+    Route::get('sumaryindirectcosts',[IndirectCostsController::class,'sumaryIndirectCosts']);
 
     //?rutas de ventas
     //rutas tipo recurso de sales

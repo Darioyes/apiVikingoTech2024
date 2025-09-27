@@ -144,4 +144,27 @@ class DirectCostsController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+
+    public function sumaryDirectCosts()
+    {
+        try {
+
+            $totalCount = directCosts::count();
+            $totalAmount = directCosts::sum('amount');
+            $totalPrice = directCosts::sum('price');
+            $averagePrice = directCosts::avg('price');
+
+            $data = [
+                'total_count' => $totalCount,
+                'total_amount' => $totalAmount,
+                'total_price' => $totalPrice,
+                'average_price' => $averagePrice
+            ];
+
+            return ApiResponse::success('Resumen de costos directos', Response::HTTP_OK, $data);
+
+        } catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
 }

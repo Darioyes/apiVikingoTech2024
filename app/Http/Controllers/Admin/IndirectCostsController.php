@@ -145,4 +145,32 @@ class IndirectCostsController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+
+    public function sumaryIndirectCosts()
+    {
+        try {
+        try {
+
+            $totalCount = indirectCosts::count();
+            $totalAmount = indirectCosts::sum('amount');
+            $totalPrice = indirectCosts::sum('price');
+            $averagePrice = indirectCosts::avg('price');
+
+            $data = [
+                'total_count' => $totalCount,
+                'total_amount' => $totalAmount,
+                'total_price' => $totalPrice,
+                'average_price' => $averagePrice
+            ];
+
+            return ApiResponse::success('Resumen de costos directos', Response::HTTP_OK, $data);
+
+        } catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+
+        } catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
 }

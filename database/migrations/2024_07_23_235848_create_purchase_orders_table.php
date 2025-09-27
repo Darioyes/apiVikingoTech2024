@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
-            $table->decimal('purcharse', 10, 2);
-            $table->decimal('amount', 10, 2);
+            $table->decimal('purcharse', 15, 2);
+            $table->decimal('amount', 15, 2);
             $table->text('description');
             $table->string('purcharse_order');
             $table->timestamps();

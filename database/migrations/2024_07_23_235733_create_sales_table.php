@@ -17,8 +17,8 @@ return new class extends Migration
             $table->decimal('amount', 10, 2)->required();
             $table->enum('confirm_sale', ['true', 'false'])->default('false')->required();
             $table->enum('shopping_cart', ['true', 'false'])->default('false')->required();
-            $table->decimal('sale_total', 10, 2)->required();
-            $table->decimal('cost_total', 10, 2)->required();
+            $table->decimal('sale_total', 15, 2)->required();
+            $table->decimal('cost_total', 15, 2)->required();
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('restrict')->onUpdate('cascade');

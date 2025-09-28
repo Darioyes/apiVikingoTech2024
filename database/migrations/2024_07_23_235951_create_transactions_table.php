@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('sales_id')->nullable()->constrained('sales')->onDelete('cascade')->onUpdate('cascade');;
             $table->foreignId('indirect_costs_id')->nullable()->constrained('indirect_costs')->onDelete('cascade')->onUpdate('cascade');;
             $table->foreignId('direct_costs_id')->nullable()->constrained('direct_costs')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('purchase_orders_id')->nullable()->constrained('purchaclearse_orders')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('purchase_orders_id')->nullable()->constrained('purchase_orders')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('maintenances_id')->nullable()->constrained('maintenances')->onDelete('cascade')->onUpdate('cascade');
         });
     }

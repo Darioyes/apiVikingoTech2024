@@ -5,7 +5,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class categoriesIndirectCosts extends Model
+class CategoriesIndirectCosts extends Model
 {
     use HasFactory;
 

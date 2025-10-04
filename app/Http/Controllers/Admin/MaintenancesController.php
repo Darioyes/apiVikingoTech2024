@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\maintenances;
-use App\Models\Admin\transactions;
+use App\Models\Admin\Maintenances;
+use App\Models\Admin\Transactions;
 
 use App\Http\Requests\Maintenances\CreateMaintenances;
 use App\Http\Requests\Maintenances\UpdateMaintenances;

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\CategoriesProducts as CategoriesProductsAdmin;
-use App\Models\Admin\categoriesIndirectCosts as CategoriesIndirectCostsAdmin;
-use App\Models\Admin\categoriesDirectCosts as categoriesDirectCostsAdmin;
+use App\Models\Admin\CategoriesIndirectCosts as CategoriesIndirectCostsAdmin;
+use App\Models\Admin\CategoriesDirectCosts as categoriesDirectCostsAdmin;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;

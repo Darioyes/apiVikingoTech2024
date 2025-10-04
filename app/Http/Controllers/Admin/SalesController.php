@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\sales;
-use App\Models\Admin\transactions;
-use App\Models\Admin\maintenances;
+use App\Models\Admin\Sales;
+use App\Models\Admin\Transactions;
+use App\Models\Admin\Maintenances;
 
 use App\Http\Requests\Sales\CreateSales;
 use App\Http\Requests\Sales\UpdateSales;
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\Admin\products as ProductsAdmin;
+use App\Models\Admin\Products as ProductsAdmin;
 use Illuminate\Support\Facades\DB;
 //clase para manejar fechas
 use Carbon\Carbon;

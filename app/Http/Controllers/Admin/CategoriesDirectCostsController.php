@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoriesDirectCosts\UpdateCategoryDirect;
 use App\Http\Requests\CategoriesDirectCosts\CreateCategoryDirect;
-use App\Models\Admin\categoriesDirectCosts as categoriesDirectCostsAdmin;
+use App\Models\Admin\CategoriesDirectCosts as categoriesDirectCostsAdmin;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;

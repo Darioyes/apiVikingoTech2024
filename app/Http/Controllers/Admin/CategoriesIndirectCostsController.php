@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\categoriesIndirectCosts as CategoriesIndirectCostsAdmin;
+use App\Models\Admin\CategoriesIndirectCosts as CategoriesIndirectCostsAdmin;
 use Illuminate\Http\Request;
 
 use App\Http\Responses\ApiResponse;

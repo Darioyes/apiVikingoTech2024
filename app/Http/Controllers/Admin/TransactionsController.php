@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\transactions;
+use App\Models\Admin\Transactions;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\cities as CitiesAdmin;
+use App\Models\Admin\Cities as CitiesAdmin;
 
 use App\Http\Requests\Cities\CreateCities;
 use App\Http\Requests\Cities\UpdateCities;

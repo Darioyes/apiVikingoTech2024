@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\directCosts;
+use App\Models\Admin\DirectCosts;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\DirectCosts\UpdateDirectCosts;
 use App\Http\Requests\DirectCosts\CreateDirectCosts;
-use App\Models\Admin\transactions;
+use App\Models\Admin\Transactions;
 
 class DirectCostsController extends Controller
 {

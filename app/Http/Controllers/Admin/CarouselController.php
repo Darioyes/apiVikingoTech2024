@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\carousel;
+use App\Models\Admin\Carousel;
 //use Illuminate\Http\Request;
 
 use App\Http\Requests\Carousel\CreateCarousel;

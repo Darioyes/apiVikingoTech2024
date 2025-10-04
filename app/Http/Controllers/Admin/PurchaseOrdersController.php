@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\purchaseOrders;
-use App\Models\Admin\products;
+use App\Models\Admin\PurchaseOrders;
+use App\Models\Admin\Products;
 use Illuminate\Http\Request;
 use App\Http\Requests\PurchaseOrders\CreatePurchaseOrders;
 use App\Http\Requests\PurchaseOrders\UpdatePurchaseOrders;
-use App\Models\Admin\transactions;
+use App\Models\Admin\Transactions;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;

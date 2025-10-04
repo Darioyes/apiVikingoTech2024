@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\vikingoRoles as VikingoRolesAdmin;
+use App\Models\Admin\VikingoRoles as VikingoRolesAdmin;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\Roles\CreateRoles;

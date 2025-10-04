@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Products\CreateProducts;
 use App\Http\Requests\Products\UpdateProducts;
-use App\Models\Admin\products as ProductsAdmin;
+use App\Models\Admin\Products as ProductsAdmin;
 //use Illuminate\Http\Request;
 
 use App\Http\Responses\ApiResponse;

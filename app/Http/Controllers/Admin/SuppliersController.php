@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\suppliers;
-use App\Models\Admin\purchaseOrders;
+use App\Models\Admin\Suppliers;
+use App\Models\Admin\PurchaseOrders;
 
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;

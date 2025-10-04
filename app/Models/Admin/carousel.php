@@ -20,6 +20,6 @@ class Carousel extends Model
     //relacion de muchos a uno con la tabla products
     public function product()
     {
-        return $this->belongsTo(products::class);
+        return $this->belongsTo(Products::class);
     }
 }

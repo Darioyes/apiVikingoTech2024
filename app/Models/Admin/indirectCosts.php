@@ -19,6 +19,6 @@ class IndirectCosts extends Model
 
     //relacion de muchos a uno con la tabla category_indirect_costs
     public function categories_indirect_costs(){
-        return $this->belongsTo(categoriesIndirectCosts::class);
+        return $this->belongsTo(CategoriesIndirectCosts::class);
     }
 }

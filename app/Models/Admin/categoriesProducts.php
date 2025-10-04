@@ -18,6 +18,6 @@ class CategoriesProducts extends Model
     //relacion de uno a muchos con la tabla products
     public function products()
     {
-        return $this->hasMany(products::class);
+        return $this->hasMany(Products::class);
     }
 }

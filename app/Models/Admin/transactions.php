@@ -19,29 +19,29 @@ class Transactions extends Model
     //relacion de muchos a uno con la tabla sales
     public function sales()
     {
-        return $this->belongsTo(sales::class);
+        return $this->belongsTo(Sales::class);
     }
 
     //relacion de muchos a uno con la tabla indirect_costs
     public function indirect_costs()
     {
-        return $this->belongsTo(indirectCosts::class);
+        return $this->belongsTo(IndirectCosts::class);
     }
 
     //relacion de muchos a uno con la tabla direct_costs
     public function direct_costs()
     {
-        return $this->belongsTo(directCosts::class);
+        return $this->belongsTo(DirectCosts::class);
     }
 
     //relacion de muchos a uno con la tabla purcharse_orders
     public function purchase_orders()
     {
-        return $this->belongsTo(purchaseOrders::class);
+        return $this->belongsTo(PurchaseOrders::class);
     }
     //relacion de muchos a uno con la tabla maintenances
     public function maintenances()
     {
-        return $this->belongsTo(maintenances::class);
+        return $this->belongsTo(Maintenances::class);
     }
 }

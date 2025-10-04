@@ -21,18 +21,18 @@ class PurchaseOrders extends Model
     //relacion de muchos a uno con la tabla products
     public function products()
     {
-        return $this->belongsTo(products::class);
+        return $this->belongsTo(Products::class);
     }
 
     //relacion de muchos a uno con la tabla suppliers
     public function suppliers()
     {
-        return $this->belongsTo(suppliers::class);
+        return $this->belongsTo(Suppliers::class);
     }
 
     //relacion de uno a muchos con la tabla transactions
     public function transactions()
     {
-        return $this->hasMany(transactions::class);
+        return $this->hasMany(Transactions::class);
     }
 }

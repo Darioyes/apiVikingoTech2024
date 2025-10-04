@@ -29,11 +29,11 @@ class Sales extends Model
     //relacion muchos a uno con la tabla products
     public function product()
     {
-        return $this->belongsTo(products::class);
+        return $this->belongsTo(Products::class);
     }
     //relacion de uno a muchos con la tabla transactions
     public function transactions()
     {
-        return $this->hasMany(transactions::class);
+        return $this->hasMany(Transactions::class);
     }
 }

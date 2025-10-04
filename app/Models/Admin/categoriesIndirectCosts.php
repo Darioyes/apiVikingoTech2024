@@ -17,6 +17,6 @@ class CategoriesIndirectCosts extends Model
 
     //relacion de uno a muchos con la tabla indirect_costs
     public function indirect_costs(){
-        return $this->hasMany(indirectCosts::class);
+        return $this->hasMany(IndirectCosts::class);
     }
 }

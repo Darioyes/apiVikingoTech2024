@@ -35,6 +35,6 @@ class Maintenances extends Model
     //relacion de uno a muchos con la tabla transactions
     public function transactions()
     {
-        return $this->hasMany(transactions::class);
+        return $this->hasMany(Transactions::class);
     }
 }

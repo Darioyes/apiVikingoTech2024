@@ -22,12 +22,12 @@ class Suppliers extends Model
     //relacion de uno a muchos con la tabla purcharse_orders
     public function purcharseOrders()
     {
-        return $this->hasMany(purchaseOrders::class);
+        return $this->hasMany(PurchaseOrders::class);
     }
 
     //relacion de muchos a uno con la tabla cities
     public function cities()
     {
-        return $this->belongsTo(cities::class);
+        return $this->belongsTo(Cities::class);
     }
 }

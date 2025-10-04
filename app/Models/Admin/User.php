@@ -55,24 +55,24 @@ class User extends Authenticatable
      //relacion muchos a uno con la tabla cities
      public function cities()
      {
-         return $this->belongsTo(cities::class);
+         return $this->belongsTo(Cities::class);
      }
 
      //relacion de uno a muchos con la tabla maintenances
      public function maintenances()
      {
-         return $this->hasMany(maintenances::class);
+         return $this->hasMany(Maintenances::class);
      }
 
      //relacion de muchos a uno con la tabla vikingo_roles
      public function vikingo_roles()
      {
-         return $this->belongsTo(vikingoRoles::class);
+         return $this->belongsTo(VikingoRoles::class);
      }
 
      //relacion de uno a muchos con la tabla sales
      public function sales()
      {
-         return $this->hasMany(sales::class);
+         return $this->hasMany(Sales::class);
      }
 }

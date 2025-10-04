@@ -31,23 +31,23 @@ class Products extends Model
     //relacion de uno a muchos con la tabla sales
     public function sales()
     {
-        return $this->hasMany(sales::class);
+        return $this->hasMany(Sales::class);
     }
 
   //relacion de muchos a uno con la tabla categories
     public function categoriesProducts()
     {
-        return $this->belongsTo(categoriesProducts::class);
+        return $this->belongsTo(CategoriesProducts::class);
     }
      //relacion de uno a muchos con la tabla carousels
     public function carousels()
     {
-        return $this->hasMany(carousel::class);
+        return $this->hasMany(Carousel::class);
     }
 
     //relacion de uno a muchos con la tabla purcharse_orders
     public function purcharseOrders()
     {
-        return $this->hasMany(purchaseOrders::class);
+        return $this->hasMany(PurchaseOrders::class);
     }
 }

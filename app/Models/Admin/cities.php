@@ -22,7 +22,7 @@ class Cities extends Model
     //relacion inversa uno a muchos con la tabla supplier
     public function suppliers()
     {
-        return $this->hasMany(suppliers::class);
+        return $this->hasMany(Suppliers::class);
     }
 
     //relacion inversa uno uno con la tabla supplier

@@ -241,4 +241,18 @@ class PurchaseOrdersController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+
+    public function searchPurchaseOrders($purchaseOrder)
+    {
+        try{
+            $purchaseOrder = purchaseOrders::with(['suppliers','products'])
+                                                    ->where('description', 'like', "%{$purchaseOrder}%")
+                                                    ->orWhere('purcharse_order', 'like', "%{$purchaseOrder}%")
+                                                    ->orderBy('created_at', 'asc')
+                                                    ->paginate(10);
+            return ApiResponse::success('Ordenes de compra encontradas', Response::HTTP_OK, $purchaseOrder);
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error('Orden de compra no encontrada', Response::HTTP_NOT_FOUND);
+        }
+    }
 }

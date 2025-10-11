@@ -146,6 +146,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::resource('purchaseorders', PurchaseOrdersController::class)->only(['index', 'store', 'show','update','destroy']);
     //ruta para obtener la informaciòn básica de las ordenes de compra
     Route::get('basicpurchaseorders',[PurchaseOrdersController::class,'getInfoBasicPurcharseOrders']);
+    //ruta para obtener la busqueda de ordenes de compra por descripción o número de orden
+    Route::get('searchpurchaseorders/{purchaseorder}',[PurchaseOrdersController::class,'searchPurchaseOrders']);
 
     //?rutas de transacciones
     //ruta tipo recurso de transactions

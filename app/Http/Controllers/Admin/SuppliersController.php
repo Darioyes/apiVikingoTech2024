@@ -165,4 +165,22 @@ class SuppliersController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
      }
+
+    //funcion para obtener los proveedores sin paginar
+    public function getAllSuppliersNoPaginate(){
+        try {
+
+            $suppliers = suppliers::select('id', 'name')
+                        ->orderBy('name', 'asc')
+                        ->get();
+
+            return ApiResponse::success('Lista de proveedores', Response::HTTP_OK, $suppliers);
+
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        catch (\Exception $e) {
+            return ApiResponse::error(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        }
+    }
 }

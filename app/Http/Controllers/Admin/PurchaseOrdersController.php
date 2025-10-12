@@ -63,7 +63,17 @@ class PurchaseOrdersController extends Controller
             $costActual = $products->where('id', $products_id)->first()->cost_price;
             if($costActual > 0){
                 //sumamos el costo del producto con el costo de la orden de compra y la dividimos por 2
-                $costSave = ($costNew + $costActual) / 2;
+                //$costSave = ($costNew + $costActual) / 2;
+
+                //contamos cuantos ordenes de compra tiene el producto
+                $totalPurchaseOrders = purchaseOrders::where('products_id', $products_id)->count();
+                //iteramos todas las ordenes de compra y la cantidad de amount que tiene el id producto lo dividimos por cada el purchase y guradamos el resultado en un array para despues dividirlo por el total de ordenes de compra
+                $cost = 0;
+                foreach(purchaseOrders::where('products_id', $products_id)->get() as $purchaseOrder){
+                    $cost = $cost + ($purchaseOrder->purcharse / $purchaseOrder->amount);
+                }
+                //dividimos el costo entre el total de ordenes de compra
+                $costSave = $cost / $totalPurchaseOrders;
             }else{
                 //si el costo del producto es 0 guardamos el costo de la orden de compra
                 $costSave = $costNew;
@@ -131,7 +141,17 @@ class PurchaseOrdersController extends Controller
             $costActual = $products->where('id', $products_id)->first()->cost_price;
             if($costActual > 0){
                 //sumamos el costo del producto con el costo de la orden de compra y la dividimos por 2
-                $costSave = ($costNew + $costActual) / 2;
+                //$costSave = ($costNew + $costActual) / 2;
+
+                //contamos cuantos ordenes de compra tiene el producto
+                $totalPurchaseOrders = purchaseOrders::where('products_id', $products_id)->count();
+                //iteramos todas las ordenes de compra y la cantidad de amount que tiene el id producto lo dividimos por cada el purchase y guradamos el resultado en un array para despues dividirlo por el total de ordenes de compra
+                $cost = 0;
+                foreach(purchaseOrders::where('products_id', $products_id)->get() as $purchaseOrder){
+                    $cost = $cost + ($purchaseOrder->purcharse / $purchaseOrder->amount);
+                }
+                //dividimos el costo entre el total de ordenes de compra
+                $costSave = $cost / $totalPurchaseOrders;
             }else{
                 //si el costo del producto es 0 guardamos el costo de la orden de compra
                 $costSave = $costNew;
@@ -155,7 +175,9 @@ class PurchaseOrdersController extends Controller
 
             //actualizamos el stock del producto
             $products->where('id', $products_id)->update(['stock' => $stockNew]);
-
+            //actualizamos la transacción
+            // $transactions = new transactions();
+            // $transactions->where('purchase_orders_id', $id)->update(['purchase_orders_id' => $id]);
 
 
             return ApiResponse::success('Orden de compra actualizada', Response::HTTP_OK, $purchaseOrders);
@@ -186,8 +208,8 @@ class PurchaseOrdersController extends Controller
             //actualizamos el stock del producto
             $products->where('id', $products_id)->update(['stock' => $stockNew]);
             //para sacar en nuevo costo del producto debo recorrer todas las ordenes de compra y la cantidad de amount que tiene el id producto
-            $purchaseOrdersAll = purchaseOrders::where('products_id', $products_id)->get();
-            if($purchaseOrdersAll->count() == 1){
+            $purchaseOrdersAll = purchaseOrders::where('products_id', $products_id)->count();;
+            if($purchaseOrdersAll == 1){
                 //si solo hay una orden de compra eliminamos el costo del producto y el stock
                 $products->where('id', $products_id)->update(['cost_price' => 0, 'stock' => 0]);
                 //eliminamos la orden de compra
@@ -196,23 +218,25 @@ class PurchaseOrdersController extends Controller
                 $transaction->where('purchase_orders_id', $id)->delete();
                 return ApiResponse::success('Orden de compra eliminada', Response::HTTP_OK, []);
             }
-            $cost = 0;
-            $amountTotal = 0;
-            foreach($purchaseOrdersAll as $purchaseOrder){
-                //sumamos el purchase de la orden de compra
-                $cost = $cost + $purchaseOrder->purcharse;
-                //sumamos el amount de la orden de compra
-                $amountTotal = $amountTotal + $purchaseOrder->amount;
-            }
-            //dividimos el costo entre el amountTotal
-            $costNew = $cost / $amountTotal;
-            //actualizamos el costo del producto
-            $products->where('id', $products_id)->update(['cost_price' => $costNew]);
 
             //eliminamos la orden de compra
             $purchaseOrders->delete();
             //eliminamos la transacción
             $transaction->where('purchase_orders_id', $id)->delete();
+
+
+            $totalPurchaseOrders = purchaseOrders::where('products_id', $products_id)->count();
+            //iteramos todas las ordenes de compra y la cantidad de amount que tiene el id producto lo dividimos por cada el purchase y guradamos el resultado en un array para despues dividirlo por el total de ordenes de compra
+            $cost = 0;
+            foreach(purchaseOrders::where('products_id', $products_id)->get() as $purchaseOrder){
+                $cost = $cost + ($purchaseOrder->purcharse / $purchaseOrder->amount);
+            }
+            //dividimos el costo entre el total de ordenes de compra
+            $costSave = $cost / $totalPurchaseOrders;
+            //actualizamos el costo del producto
+            $products->where('id', $products_id)->update(['cost_price' => $costSave]);
+
+
 
             return ApiResponse::success('Orden de compra eliminada', Response::HTTP_OK, []);
         }catch(ModelNotFoundException $e){

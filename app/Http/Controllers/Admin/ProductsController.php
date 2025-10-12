@@ -294,6 +294,28 @@ class ProductsController extends Controller
 
         } catch (ModelNotFoundException $e) {
             return ApiResponse::error('Producto no encontrado', Response::HTTP_NOT_FOUND);
+        } catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //funcion para buscar productos sin paginar
+    public function searchProductNoPaginate(){
+         try {
+            //si no hay productos devolvemos el json vacio
+            if(ProductsAdmin::count() === 0){
+                return ApiResponse::success('No hay productos creados', Response::HTTP_OK, []);
+            }
+            //obtener solo el id y el name de los productos
+            $products = ProductsAdmin::select('id', 'name')
+                                        ->orderBy('name', 'asc')
+                                        ->get();
+            return ApiResponse::success('Productos', Response::HTTP_OK, $products);
+
+        } catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::error('Producto no encontrado', Response::HTTP_NOT_FOUND);
         }
     }
 

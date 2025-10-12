@@ -91,6 +91,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('searchproducts/{product}',[ProductsController::class,'searchProduct']);
     //ruta para todos los productos no páginados
     Route::get('products-nopaginate',[ProductsController::class,'indexNoPaginate']);
+    //ruta para obtener el total de productos sin paginación
+    Route::get('totalproducts',[ProductsController::class,'searchProductNoPaginate']);
 
     //?rutas de mantenimientos
     //ruta tipo recurso de maintenances
@@ -113,6 +115,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('searchsuppliers/{supplier}',[SuppliersController::class,'searchSuppliers']);
     //ruta de información básica de proveedores
     Route::get('basicsuppliers',[SuppliersController::class,'infoBasicSuppliers']);
+    //ruta para obtener los proveedores sin paginar
+    Route::get('totalsuppliers',[SuppliersController::class,'getAllSuppliersNoPaginate']);
 
     //?rutas de costos directos
     //ruta tipo recurso de directCosts

@@ -8,6 +8,7 @@ use App\Models\Admin\Carousel;
 
 use App\Http\Requests\Carousel\CreateCarousel;
 use App\Http\Requests\Carousel\UpdateCarousel;
+use App\Http\Requests\UpdateCarouselOrderRequest;
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -26,8 +27,8 @@ class CarouselController extends Controller
                 return ApiResponse::success('No hay carrusel creado', Response::HTTP_OK, []);
             }
             $carousel = carousel::with(['product:id,name,description'])
-                                        ->orderBy('id', 'asc')
-                                        ->paginate(10);
+                                        ->orderBy('order', 'asc')
+                                        ->get();
             return ApiResponse::success('Productos', Response::HTTP_OK, $carousel);
 
         } catch(\Exception $e){
@@ -154,6 +155,8 @@ class CarouselController extends Controller
             $carousel = carousel::findOrFail($id);
             //borramos la imagen
             Storage::delete($carousel->image);
+            Storage::delete($carousel->image2);
+            Storage::delete($carousel->image3);
             //borramos el producto
             $carousel->delete();
             return ApiResponse::success('Carrusel eliminado', Response::HTTP_OK);
@@ -161,6 +164,43 @@ class CarouselController extends Controller
         } catch(ModelNotFoundException $e){
             return ApiResponse::error('Carrusel no encontrado', Response::HTTP_NOT_FOUND);
         } catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateOrder(UpdateCarouselOrderRequest $request)
+    {
+        try {
+            $carousels = $request->input('banners', []);
+
+            if (empty($carousels)) {
+                return ApiResponse::error('No se enviaron datos para actualizar.', Response::HTTP_BAD_REQUEST);
+            }
+
+            foreach ($carousels as $item) {
+                Carousel::where('id', $item['id'])
+                    ->update(['order' => $item['order']]);
+            }
+
+            return ApiResponse::success('Orden actualizado correctamente', Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function searchCarousel($carousel)
+    {
+        try {
+            $carousels = carousel::with(['product:id,name,description'])
+                                    ->whereHas('product', function ($query) use ($carousel) {
+                                        $query->where('name', 'like', '%' . $carousel . '%');
+                                    })
+                                    ->orderBy('order', 'asc')
+                                    ->get();
+
+            return ApiResponse::success('Resultados de la búsqueda', Response::HTTP_OK, $carousels);
+
+        } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

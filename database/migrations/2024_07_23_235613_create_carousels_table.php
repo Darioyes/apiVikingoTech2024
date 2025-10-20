@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('carousels', function (Blueprint $table) {
             $table->id();
             $table->enum('carousel', ['active', 'inactive'])->default('inactive');
-            $table->double('discount', 5,2)->default(0)->nullable();
+            $table->integer('order')->unique();
             $table->string('image', 100);
             $table->string('image2', 100);
             $table->string('image3', 100);

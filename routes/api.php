@@ -107,6 +107,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?rutas de carrusel
     //ruta tipo recurso de carousel
     Route::resource('carousel', CarouselController::class)->only(['index', 'store', 'show','update','destroy']);
+    Route::post('carousel/update-order', [CarouselController::class, 'updateOrder']);
+    Route::get('searchcarousel/{carousel}', [CarouselController::class, 'searchCarousel']);
 
     //?rutas de proveedores
     //ruta tipo recurso de suppliers

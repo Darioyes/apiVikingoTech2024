@@ -33,6 +33,7 @@ class UpdateMaintenances extends FormRequest
             'created_at' => 'required|date',
             'image1' => [
                 'nullable',
+                ///El rule::when hace que si se envia la imagen, aplique las reglas de validacion
                 Rule::when(request()->hasFile('image1'), ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048']),
                 Rule::when(!request()->has('keep_image1') && !request()->hasFile('image1'), ['prohibited'])
             ],

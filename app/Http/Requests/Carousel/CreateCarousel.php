@@ -23,7 +23,7 @@ class CreateCarousel extends FormRequest
     {
         return [
             'carousel'=>'required|in:active,inactive',
-            'discount'=>'required|numeric|between:0,99999.99',
+            'order'=>'required|numeric|unique:carousels,order',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'image2' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'image3' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('order')->unique();
             $table->string('image', 100);
             $table->string('image2', 100);
-            $table->string('image3', 100);
+            $table->string('image3', 100)->nullable();
             $table->timestamps();
             $table->foreignId('product_id')->constrained('products')->onDelete('restrict')->onUpdate('cascade');
         });

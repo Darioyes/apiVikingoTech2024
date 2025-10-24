@@ -13,6 +13,7 @@ class Carousel extends Model
         'order',
         'image',
         'image2',
+        'image3',
         'product_id',
     ];
 

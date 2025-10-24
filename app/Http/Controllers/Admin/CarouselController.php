@@ -51,14 +51,18 @@ class CarouselController extends Controller
             $path = $request->file('image')->store('public/images/carousel');
             //guardamos la ruta en la base de datos
             $carousel->image = $path;
-            //subimos la image2 del producto y guardamo la ruta en la variable path
-            $path2 = $request->file('image2')->store('public/images/carousel');
-            //guardamos la ruta en la base de datos
-            $carousel->image2 = $path2;
-            //subimos la image3 del producto y guardamo la ruta en la variable path
-            $path3 = $request->file('image3')->store('public/images/carousel');
-            //guardamos la ruta en la base de datos
-            $carousel->image3 = $path3;
+            if($request->hasFile('image2')){
+                //subimos la image2 del producto y guardamo la ruta en la variable path
+                $path2 = $request->file('image2')->store('public/images/carousel');
+                //guardamos la ruta en la base de datos
+                $carousel->image2 = $path2;
+            }
+            if($request->hasFile('image3')){
+                //subimos la image3 del producto y guardamo la ruta en la variable path
+                $path3 = $request->file('image3')->store('public/images/carousel');
+                //guardamos la ruta en la base de datos
+                $carousel->image3 = $path3;
+            }
             //guardamos el producto
             $carousel->save();
             //devolvemos la respuesta
@@ -153,9 +157,15 @@ class CarouselController extends Controller
         try {
             $carousel = carousel::findOrFail($id);
             //borramos la imagen
-            Storage::delete($carousel->image);
-            Storage::delete($carousel->image2);
-            Storage::delete($carousel->image3);
+            if($carousel->image){
+                Storage::delete($carousel->image);
+            }
+            if($carousel->image2){
+                Storage::delete($carousel->image2);
+            }
+            if($carousel->image3){
+                Storage::delete($carousel->image3);
+            }
             //borramos el producto
             $carousel->delete();
             return ApiResponse::success('Carrusel eliminado', Response::HTTP_OK);

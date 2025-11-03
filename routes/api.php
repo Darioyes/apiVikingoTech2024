@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\PurchaseOrdersController;
 use App\Http\Controllers\Admin\TransactionsController;
 use App\Http\Controllers\Admin\General;
+use App\Http\Controllers\User\Carousel;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +31,7 @@ use App\Http\Controllers\Admin\General;
 |
 */
 
-//!rutas bakcend
+//!rutas del bacoffice de vikingo tech
 //ruta de login
 Route::post('vikingouser/login', [UsersController::class, 'login']);
 
@@ -176,3 +177,6 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('summary/{day}',[SalesController::class,'getSummary']);
 
 });
+
+//!rutas del frontend de usuarios de vikingo tech
+Route::get('vikingousers/carousel',[Carousel::class,'index']);

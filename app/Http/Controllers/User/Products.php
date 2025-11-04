@@ -4,6 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Users\Products as ProductsUser;
+
+use App\Http\Responses\ApiResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class Products extends Controller
 {
@@ -12,38 +16,17 @@ class Products extends Controller
      */
     public function index()
     {
-        //
+        try {
+            //si no hay productos devolvemos el json vacio
+            if (ProductsUser::count() === 0) {
+                return ApiResponse::success('No hay productos creados', Response::HTTP_OK, []);
+            }
+            $products = ProductsUser::orderBy('name', 'asc')->get();
+                return ApiResponse::success('Productos', Response::HTTP_OK, $products);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+   
 }

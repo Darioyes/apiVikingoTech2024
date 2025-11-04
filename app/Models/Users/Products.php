@@ -28,7 +28,13 @@ class Products extends Model
         'categories_products_id',
     ];
 
-         //relacion de uno a muchos con la tabla carousels
+    //relacion de muchos a uno con la tabla categories
+    public function categoriesProducts()
+    {
+        return $this->belongsTo(CategoriesProducts::class);
+    }
+
+    //relacion de uno a muchos con la tabla carousels
     public function carousels()
     {
         return $this->hasMany(Carousel::class);

@@ -184,6 +184,7 @@ Route::get('vikingousers/carousel',[Carousel::class,'index']);
 
 //?rutas de productos para usuarios
 Route::get('vikingousers/products',[App\Http\Controllers\User\Products::class,'index']);
+Route::get('vikingousers/products/{slug}',[App\Http\Controllers\User\Products::class,'show']);
 
-//ruta de categorias de productos para usuarios
+//?ruta de categorias de productos para usuarios
 Route::get('vikingousers/categoriesproducts',[App\Http\Controllers\User\CategoriesProductsController::class,'index']);

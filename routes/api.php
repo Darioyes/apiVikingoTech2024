@@ -189,3 +189,14 @@ Route::get('vikingousers/products/category/{categorySlug}',[App\Http\Controllers
 
 //?ruta de categorias de productos para usuarios
 Route::get('vikingousers/categoriesproducts',[App\Http\Controllers\User\CategoriesProductsController::class,'index']);
+
+//?ruta de login de usuarios
+Route::post('vikingousers/login', [App\Http\Controllers\User\UserController::class, 'login']);
+
+Route::middleware('auth:sanctum','verified')->group(function(){
+    //?ruta de logout de usuarios
+    Route::post('vikingousers/logout', [App\Http\Controllers\User\UserController::class, 'logout']);
+    //?Ruta mantenimientos para usuarios
+    Route::get('vikingousers/maintenances/{id}', [App\Http\Controllers\User\Maintenance::class, 'show']);
+});
+    

@@ -18,9 +18,18 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
+        'status',
         'name',
+        'lastname',
         'email',
+        'gender',
+        'birthday',
+        'phone1',
+        'phone2',
+        'address',
         'password',
+        'cities_id',
+        'vikingo_roles_id',
     ];
 
     /**
@@ -42,4 +51,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    //relacion de uno a muchos con la tabla maintenances
+     public function maintenances()
+     {
+         return $this->hasMany(Maintenance::class);
+     }
+    
 }

@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\PurchaseOrdersController;
 use App\Http\Controllers\Admin\TransactionsController;
 use App\Http\Controllers\Admin\General;
 use App\Http\Controllers\User\Carousel;
+use App\Models\Users\User as UserFront;
 
 /*
 |--------------------------------------------------------------------------
@@ -192,11 +193,49 @@ Route::get('vikingousers/categoriesproducts',[App\Http\Controllers\User\Categori
 
 //?ruta de login de usuarios
 Route::post('vikingousers/login', [App\Http\Controllers\User\UserController::class, 'login']);
+//?ruta de registro de usuarios
+Route::post('vikingousers/register', [App\Http\Controllers\User\UserController::class, 'store']);
+
+//?rutas de ciudades para usuarios
+Route::get('vikingousers/cities',[App\Http\Controllers\User\Cities::class,'index']);
 
 Route::middleware('auth:sanctum','verified')->group(function(){
-    //?ruta de logout de usuarios
-    Route::post('vikingousers/logout', [App\Http\Controllers\User\UserController::class, 'logout']);
     //?Ruta mantenimientos para usuarios
     Route::get('vikingousers/maintenances/{id}', [App\Http\Controllers\User\Maintenance::class, 'show']);
 });
+
+Route::middleware('auth:sanctum')->group(function(){
+    //?ruta de logout de usuarios
+    Route::post('vikingousers/logout', [App\Http\Controllers\User\UserController::class, 'logout']);
+    });
+    
+//?ruta para reenviar el correo de verificación
+Route::post('vikingousers/resend-verification/{email}', [App\Http\Controllers\User\UserController::class, 'resendVerificationEmail']);
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request) {
+    // 1. Buscar al usuario por ID
+    $user = UserFront::findOrFail($request->id);
+
+    // 2. Verificar si el hash coincide (Seguridad)
+    if (!hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['message' => 'El enlace de verificación no es válido.'], 403);
+    }
+
+    // 3. Si ya está verificado, no hacemos nada
+    if ($user->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Este correo ya ha sido verificado anteriormente.']);
+    }
+
+    // 4. Marcar como verificado (esto llena email_verified_at automáticamente)
+    if ($user->markEmailAsVerified()) {
+        // Disparar evento opcional de Laravel
+        event(new \Illuminate\Auth\Events\Verified($user));
+    }
+
+    $frontendUrl = env('FRONTEND_URL');
+    $redirectUrl = $frontendUrl . '/login?verified=true';
+
+    return redirect()->away($redirectUrl);
+    
+})->name('verification.verify');
     

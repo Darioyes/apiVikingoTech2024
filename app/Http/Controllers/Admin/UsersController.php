@@ -188,23 +188,22 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        try{
-            // Encuentra al usuario
+        try {
             $userToDestroy = UserAdmin::findOrFail($id);
-            //guardamos la imagen en la variable path
             $path = $userToDestroy->image;
-            //eliminamos el usuario
+
+            // Primero eliminamos al usuario
             $userToDestroy->delete();
-            //si la imagen se elimino correctamente eliminamos la imagen
-            if($userToDestroy){
+
+            // Verificamos si existe un path y si el archivo realmente está en el disco
+            if ($path && Storage::exists($path)) {
                 Storage::delete($path);
-                return ApiResponse::success('Usuario eliminado correctamente',Response::HTTP_OK);
-            }else{
-                return ApiResponse::error('Error al eliminar el usuario', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-        }catch (ModelNotFoundException $e) {
-            return ApiResponse::error('El usuario que deseaeliminar no existe', Response::HTTP_NOT_FOUND);
+            return ApiResponse::success('Usuario eliminado correctamente', Response::HTTP_OK);
+
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::error('El usuario que desea eliminar no existe', Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

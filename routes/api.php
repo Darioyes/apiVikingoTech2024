@@ -233,7 +233,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request) {
     }
 
     $frontendUrl = env('FRONTEND_URL');
-    $redirectUrl = $frontendUrl . '/login?verified=true';
+    $redirectUrl = $frontendUrl;
 
     return redirect()->away($redirectUrl);
     

@@ -14,6 +14,9 @@ use App\Http\Requests\Auth\CreateRequest;
 //esto se importa para escribir sql crudo
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+//el Illuminate\Support\Facades\Password; es para personalizar la url de restablecimiento de contraseña
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller 
 {
@@ -141,4 +144,56 @@ class UserController extends Controller
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    //funcion para enviar el correo de restablecimiento de contraseña
+    public function sendRecoveryLink(Request $request) 
+    {
+        $request->validate(['email' => 'required|email']);
+        
+        try{
+        //buscar al usuario, genera el token y envía el mail automáticamente
+        $status = Password::sendResetLink($request->only('email'));
+
+        //Password::sendResetLink devuelve un status que puede ser Password::RESET_LINK_SENT o Password::INVALID_USER, dependiendo de si el correo existe o no en la base de datos, por eso se compara el status con Password::RESET_LINK_SENT para saber si se envió correctamente el correo o no
+        return $status === Password::RESET_LINK_SENT
+            ? ApiResponse::success('Correo de restablecimiento de contraseña enviado correctamente, recuerde que tiene 10 minutos para utilizarlo, no olvide revisar su bandeja de entrada o spam', Response::HTTP_OK)
+            : ApiResponse::error('El correo electrónico no esta registrado, por favor verifique el correo electrónico enviado', Response::HTTP_BAD_REQUEST);
+        }catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error('Usuario no encontrado', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function resetPassword(Request $request) 
+    {   
+        $passwordRule = Rules\Password::min(8)
+        ->mixedCase()
+        ->numbers()
+        ->symbols();
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email|min:5|max:100',
+            'password' => ['required', 'confirmed',$passwordRule],
+        ]);
+        try{
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? ApiResponse::success('Contraseña restablecida correctamente', Response::HTTP_OK)
+            : ApiResponse::error('Error, el token es inválido.', Response::HTTP_BAD_REQUEST);
+        }catch(\Exception $e){
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error('Usuario no encontrado', Response::HTTP_NOT_FOUND);
+        }
+    }
+
 }

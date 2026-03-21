@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\CategoriesProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Auth\Events\Verified;
 use App\Http\Controllers\Admin\CategoriesDirectCostsController;
 use App\Http\Controllers\Admin\CategoriesIndirectCostsController;
 use App\Http\Controllers\Admin\CitiesController;
@@ -20,6 +21,11 @@ use App\Http\Controllers\Admin\TransactionsController;
 use App\Http\Controllers\Admin\General;
 use App\Http\Controllers\User\Carousel;
 use App\Models\Users\User as UserFront;
+use App\Http\Controllers\User\UserController as UserFrontController;
+use App\Http\Controllers\User\Cities as CitiesFrontController;
+use App\Http\Controllers\User\Products as ProductsFrontController;
+use App\Http\Controllers\User\CategoriesProductsController as CategoriesProductsFrontController;
+use App\Http\Controllers\User\Maintenance as MaintenanceFrontController;
 
 /*
 |--------------------------------------------------------------------------
@@ -184,33 +190,39 @@ Route::middleware('auth:sanctum','verified')->group(function(){
 Route::get('vikingousers/carousel',[Carousel::class,'index']);
 
 //?rutas de productos para usuarios
-Route::get('vikingousers/products',[App\Http\Controllers\User\Products::class,'index']);
-Route::get('vikingousers/products/{slug}',[App\Http\Controllers\User\Products::class,'show']);
-Route::get('vikingousers/products/category/{categorySlug}',[App\Http\Controllers\User\Products::class,'productsByCategory']);
+Route::get('vikingousers/products',[ProductsFrontController::class,'index']);
+Route::get('vikingousers/products/{slug}',[ProductsFrontController::class,'show']);
+Route::get('vikingousers/products/category/{categorySlug}',[ProductsFrontController::class,'productsByCategory']);
 
 //?ruta de categorias de productos para usuarios
-Route::get('vikingousers/categoriesproducts',[App\Http\Controllers\User\CategoriesProductsController::class,'index']);
+Route::get('vikingousers/categoriesproducts',[CategoriesProductsFrontController::class,'index']);
 
 //?ruta de login de usuarios
-Route::post('vikingousers/login', [App\Http\Controllers\User\UserController::class, 'login']);
+Route::post('vikingousers/login', [UserFrontController::class, 'login']);
 //?ruta de registro de usuarios
-Route::post('vikingousers/register', [App\Http\Controllers\User\UserController::class, 'store']);
+Route::post('vikingousers/register', [UserFrontController::class, 'store']);
 
 //?rutas de ciudades para usuarios
-Route::get('vikingousers/cities',[App\Http\Controllers\User\Cities::class,'index']);
+Route::get('vikingousers/cities',[CitiesFrontController::class,'index']);
+
+// 1. Para que el usuario pida el link (escribe su correo y da clic en "Enviar")
+Route::post('/password/email', [UserFrontController::class, 'sendRecoveryLink']);
+
+// 2. Para que el usuario guarde la nueva contraseña (el formulario final en Angular)
+Route::post('/password/reset', [UserFrontController::class, 'resetPassword']);
 
 Route::middleware('auth:sanctum','verified')->group(function(){
     //?Ruta mantenimientos para usuarios
-    Route::get('vikingousers/maintenances/{id}', [App\Http\Controllers\User\Maintenance::class, 'show']);
+    Route::get('vikingousers/maintenances/{id}', [MaintenanceFrontController::class, 'show']);
 });
 
 Route::middleware('auth:sanctum')->group(function(){
     //?ruta de logout de usuarios
-    Route::post('vikingousers/logout', [App\Http\Controllers\User\UserController::class, 'logout']);
+    Route::post('vikingousers/logout', [UserFrontController::class, 'logout']);
     });
     
 //?ruta para reenviar el correo de verificación
-Route::post('vikingousers/resend-verification/{email}', [App\Http\Controllers\User\UserController::class, 'resendVerificationEmail']);
+Route::post('vikingousers/resend-verification/{email}', [UserFrontController::class, 'resendVerificationEmail']);
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request) {
     // 1. Buscar al usuario por ID
@@ -229,7 +241,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request) {
     // 4. Marcar como verificado (esto llena email_verified_at automáticamente)
     if ($user->markEmailAsVerified()) {
         // Disparar evento opcional de Laravel
-        event(new \Illuminate\Auth\Events\Verified($user));
+        event(new Verified($user));
     }
 
     $frontendUrl = env('FRONTEND_URL');

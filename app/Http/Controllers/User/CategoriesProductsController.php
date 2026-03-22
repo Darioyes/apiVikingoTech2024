@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\UserTemp;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Users\CategoriesProducts as CategoriesProductsUser;

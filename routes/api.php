@@ -18,7 +18,6 @@ use App\Http\Controllers\Admin\IndirectCostsController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\PurchaseOrdersController;
 use App\Http\Controllers\Admin\TransactionsController;
-use App\Http\Controllers\Admin\General;
 use App\Http\Controllers\User\Carousel;
 use App\Models\Users\User as UserFront;
 use App\Http\Controllers\User\UserController as UserFrontController;
@@ -219,7 +218,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
 Route::middleware('auth:sanctum')->group(function(){
     //?ruta de logout de usuarios
     Route::post('vikingousers/logout', [UserFrontController::class, 'logout']);
-    });
+});
     
 //?ruta para reenviar el correo de verificación
 Route::post('vikingousers/resend-verification/{email}', [UserFrontController::class, 'resendVerificationEmail']);

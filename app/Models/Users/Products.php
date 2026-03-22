@@ -37,4 +37,9 @@ class Products extends Model
     {
         return $this->hasMany(Carousel::class);
     }
+    //relacion de uno a muchos con la tabla shooping_cart
+    public function shoopingCart()
+    {
+        return $this->hasMany(ShoopingCart::class);
+    }
 }

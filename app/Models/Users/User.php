@@ -60,6 +60,12 @@ class User extends Authenticatable implements MustVerifyEmail,CanResetPassword
          return $this->hasMany(Maintenance::class);
      }
 
+     //relacion de uno a muchos con la tabla shooping_cart
+    public function shooping_cart()
+    {
+        return $this->hasMany(ShoopingCart::class);
+    }
+
      public function sendEmailVerificationNotification()
     {
         $this->notify(new class extends VerifyEmail {

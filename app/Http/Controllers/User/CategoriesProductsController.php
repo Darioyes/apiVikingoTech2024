@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\user;
+namespace App\Http\Controllers\UserTemp;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Users\CategoriesProducts as CategoriesProductsUser;
 
 use App\Http\Responses\ApiResponse;

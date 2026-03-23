@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shooping_cart', function (Blueprint $table) {
+        Schema::create('shooping_carts', function (Blueprint $table) {
             $table->id();
             $table->decimal('amount', 10, 2)->required();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shooping_cart');
+        Schema::dropIfExists('shooping_carts');
     }
 };

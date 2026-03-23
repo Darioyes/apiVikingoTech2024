@@ -24,20 +24,20 @@ class CreateShoopingCart extends FormRequest
         return [
             'user_id' => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
+            'amount' => 'required|integer|min:1'
         ];
     }
 
     public function messages(): array
     {
         return [
-            'user_id.required' => 'El campo user_id es obligatorio.',
+            'user_id.required' => 'El ID usuario es obligatorio.',
             'user_id.exists' => 'El usuario especificado no existe.',
-            'product_id.required' => 'El campo product_id es obligatorio.',
+            'product_id.required' => 'El ID producto es obligatorio.',
             'product_id.exists' => 'El producto especificado no existe.',
-            'quantity.required' => 'El campo quantity es obligatorio.',
-            'quantity.integer' => 'La cantidad debe ser un número entero.',
-            'quantity.min' => 'La cantidad debe ser al menos 1.'
+            'amount.required' => 'El campo amount es obligatorio.',
+            'amount.integer' => 'La cantidad debe ser un número entero.',
+            'amount.min' => 'La cantidad debe ser al menos 1.'
         ];
     }
 }

@@ -11,7 +11,7 @@ class UpdateShoopingCart extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,19 @@ class UpdateShoopingCart extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => 'sometimes|exists:users,id',
+            'product_id' => 'sometimes|exists:products,id',
+            'amount' => 'sometimes|integer|min:1'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'user_id.exists' => 'El usuario especificado no existe.',
+            'product_id.exists' => 'El producto especificado no existe.',
+            'amount.integer' => 'La cantidad debe ser un número entero.',
+            'amount.min' => 'La cantidad debe ser al menos 1.'
         ];
     }
 }

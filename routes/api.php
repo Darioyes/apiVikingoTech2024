@@ -25,6 +25,7 @@ use App\Http\Controllers\User\Cities as CitiesFrontController;
 use App\Http\Controllers\User\Products as ProductsFrontController;
 use App\Http\Controllers\User\CategoriesProductsController as CategoriesProductsFrontController;
 use App\Http\Controllers\User\Maintenance as MaintenanceFrontController;
+use App\Http\Controllers\User\ShoopingCart as ShoopingCartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -218,6 +219,12 @@ Route::middleware('auth:sanctum','verified')->group(function(){
 Route::middleware('auth:sanctum')->group(function(){
     //?ruta de logout de usuarios
     Route::post('vikingousers/logout', [UserFrontController::class, 'logout']);
+    //?ruta para el carrito de compras
+    Route::resource('vikingousers/shoopingcart', ShoopingCartController::class)->only(['store','update','destroy']);
+    //?ruta para obtener el carrito de compras por usuario
+    Route::get('vikingousers/shoopingcart/user/{userId}', [ShoopingCartController::class, 'getShoopingCartByUser']);
+    //?ruta para modificar la cantidad de un producto en el carrito de compras si ya existe o agregarlo si no existe
+    Route::post('vikingousers/shoopingcart/quantity/{id}', [ShoopingCartController::class, 'storeQuantity']);
 });
     
 //?ruta para reenviar el correo de verificación

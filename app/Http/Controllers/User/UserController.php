@@ -108,11 +108,6 @@ class UserController extends Controller
             $user = UserFront::where('email', $request->email)->first();
 
             $tokenAccess = DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->first();
-
-            if($tokenAccess){
-                //si hay un token de ese usuario lo eliminamos
-                DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
-            }
             
             //si lo son creamos un token de acceso para ese usuario
             $token = $user->createToken('vikingo_token')->plainTextToken;

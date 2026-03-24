@@ -117,9 +117,9 @@ class UserController extends Controller
         }catch(ModelNotFoundException $e){}
     }
 
-        public function logout(){
+        public function logout(Request $request){
         //eliminamos el token de la base de datos desde la autenticacion de sanctum
-        auth()->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return ApiResponse::success('Sesión cerrada correctamente', Response::HTTP_OK);
     }

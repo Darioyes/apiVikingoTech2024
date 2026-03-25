@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Users\Carousel as carouselUsers;
-use Illuminate\Http\Request;
+use App\Models\Users\Carousel as CarouselUsers;
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,10 +16,10 @@ class Carousel extends Controller
     {
      try {
             //si no hay productos devolvemos el json vacio
-            if(carouselUsers::count() === 0){
+            if(CarouselUsers::count() === 0){
                 return ApiResponse::success('No hay carrusel creado', Response::HTTP_OK, []);
             }
-            $carousel = carouselUsers::with(['product:id,name,description'])
+            $carousel = CarouselUsers::with(['product:id,name,description,slug,stock,sale_price,image1'])
                                         ->orderBy('order', 'asc')
                                         ->get();
             return ApiResponse::success('Productos', Response::HTTP_OK, $carousel);

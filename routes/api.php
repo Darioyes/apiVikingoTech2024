@@ -26,6 +26,7 @@ use App\Http\Controllers\User\Products as ProductsFrontController;
 use App\Http\Controllers\User\CategoriesProductsController as CategoriesProductsFrontController;
 use App\Http\Controllers\User\Maintenance as MaintenanceFrontController;
 use App\Http\Controllers\User\ShoopingCart as ShoopingCartController;
+use App\Http\Controllers\User\SalesController as SalesFrontController;
 
 /*
 |--------------------------------------------------------------------------
@@ -214,6 +215,8 @@ Route::post('/password/reset', [UserFrontController::class, 'resetPassword']);
 Route::middleware('auth:sanctum','verified')->group(function(){
     //?Ruta mantenimientos para usuarios
     Route::get('vikingousers/maintenances/{id}', [MaintenanceFrontController::class, 'show']);
+    //ruta para obtener las compras de un usuario
+    Route::get('vikingousers/sales/user/{id}', [SalesFrontController::class, 'show']);
 });
 
 Route::middleware('auth:sanctum')->group(function(){

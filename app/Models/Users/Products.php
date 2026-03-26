@@ -42,4 +42,9 @@ class Products extends Model
     {
         return $this->hasMany(ShoopingCart::class);
     }
+    //relacion de uno a muchos con la tabla sales
+    public function sales()
+    {
+        return $this->hasMany(Sales::class);
+    }
 }

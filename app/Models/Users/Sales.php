@@ -30,4 +30,9 @@ class Sales extends Model
     {
         return $this->belongsTo(Products::class);
     }
+    
+    //relacion de uno a muchos con la tabla transactions
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
 }

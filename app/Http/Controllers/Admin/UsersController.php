@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 //esto se importa para escribir sql crudo
 use Illuminate\Support\Facades\DB;
 use Spatie\FlareClient\Api;
+use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
@@ -232,11 +233,11 @@ class UsersController extends Controller
 
             //inicializamos la tabla personal_access_tokens
             $tokenAccess = DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->first();
-            //validamos si hay un token de ese usuario en la tabla personal_access_tokens en la columna tokeneable_id con el id del usuario
-            if($tokenAccess){
-                //si hay un token de ese usuario lo eliminamos
-                DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
-            }
+            // //validamos si hay un token de ese usuario en la tabla personal_access_tokens en la columna tokeneable_id con el id del usuario
+            // if($tokenAccess){
+            //     //si hay un token de ese usuario lo eliminamos
+            //     DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->delete();
+            // }
 
             if ( $user->vikingo_roles_id === 2) {
                 // Si '2 o administrador' no es true, el usuario no tiene permisos de administrador
@@ -253,9 +254,9 @@ class UsersController extends Controller
 
     }
 
-    public function logout(){
+    public function logout(Request $request){
         //eliminamos el token de la base de datos desde la autenticacion de sanctum
-        auth()->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return ApiResponse::success('Sesión cerrada correctamente', Response::HTTP_OK);
     }

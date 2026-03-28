@@ -53,7 +53,7 @@ class SalesController extends Controller
                 return ApiResponse::error('No hay stock suficiente para la venta', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
             //instanciamos el modelo de transactions para guardar la venta
-            $transaction = new transactions();
+            $transaction = new Transactions();
 
             //obtenemos el amount de la venta
             $amount = $request->input('amount');
@@ -272,7 +272,7 @@ class SalesController extends Controller
             //traemos las ventas desde el dia actual menos 7 dias atras
             $sales = sales::where('created_at', '>=', $startDay)->sum('sale_total');
             //traemos los mantenimientos desde el dia actual menos 7 dias atras
-            $maintenances = maintenances::where('created_at', '>=', $startDay)->sum('price');
+            $maintenances = Maintenances::where('created_at', '>=', $startDay)->sum('price');
             //treamos los costos directos desde el dia actual menos 7 dias atras
             $directCosts = DB::table('direct_costs')->where('created_at', '>=', $startDay)->sum('price');
             //traemos los costos indirectos desde el dia actual menos 7 dias atras

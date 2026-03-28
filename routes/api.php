@@ -215,8 +215,10 @@ Route::post('/password/reset', [UserFrontController::class, 'resetPassword']);
 Route::middleware('auth:sanctum','verified')->group(function(){
     //?Ruta mantenimientos para usuarios
     Route::get('vikingousers/maintenances/{id}', [MaintenanceFrontController::class, 'show']);
-    //ruta para obtener las compras de un usuario
+    //?ruta para obtener las compras de un usuario
     Route::get('vikingousers/sales/user/{id}', [SalesFrontController::class, 'show']);
+    //?ruta para crear una venta
+    Route::post('vikingousers/sales', [SalesFrontController::class, 'store']);
 });
 
 Route::middleware('auth:sanctum')->group(function(){

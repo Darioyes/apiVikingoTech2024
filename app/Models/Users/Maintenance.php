@@ -29,4 +29,9 @@ class Maintenance extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    //relacion de uno a muchos con la tabla transactions
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
 }

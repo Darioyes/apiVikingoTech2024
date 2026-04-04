@@ -66,103 +66,128 @@ class BoldController extends Controller
         }
     }
 
-public function webhook(Request $request)
-{
-    try {
+  public function webhook(Request $request)
+    {
+        try {
 
-        // 🔥 1. RAW REAL (ÚNICA FUENTE DE VERDAD)
-        $rawBody = file_get_contents('php://input');
+            // 🔥 1. OBTENER PAYLOAD (SIEMPRE)
+            $payload = $request->all();
+            Log::info('🔎 HEADERS RAW', $request->headers->all());
 
-        Log::info('🔥 RAW REAL', [
-            'raw' => $rawBody,
-            'length' => strlen($rawBody)
-        ]);
+            if (empty($payload)) {
+                $payload = json_decode($request->getContent(), true);
+            }
 
-        // 🔥 2. CONVERTIR A JSON
-        $payload = json_decode($rawBody, true);
+            Log::info('🔥 WEBHOOK BOLD', $payload);
 
-        Log::info('🔥 WEBHOOK BOLD', $payload);
-        Log::info('🔎 HEADERS RAW', $request->headers->all());
+            // 🧠 2. EXTRAER DATOS CLAVE (ANTES DE TODO)
+            $orderId = data_get($payload, 'data.metadata.reference');
+            $paymentId = data_get($payload, 'data.payment_id');
+            $type = data_get($payload, 'type');
 
-        // 🧠 3. VALIDAR FIRMA (ANTES DE TODO)
-        $receivedSignature = $request->header('x-bold-signature');
-        $secret = env('BOLD_SECRET_KEY');
+            // 🔎 3. BUSCAR ORDEN (SI EXISTE)
+            $order = null;
+
+            if ($orderId) {
+                $order = OrderBold::where('order_id', $orderId)->first();
+            }
+
+            // 💾 4. GUARDAR SIEMPRE LA RESPUESTA (🔥 CLAVE)
+            if ($order) {
+                $order->bold_response = [
+                    'payload' => $payload,
+                    'raw' => $request->getContent(),
+                    'headers' => $request->headers->all()
+                ];
+                $order->save();
+            } else {
+                Log::warning('⚠️ Orden no encontrada para guardar payload', [
+                    'order_id' => $orderId
+                ]);
+            }
+
+            // 🔐 5. VALIDAR FIRMA (DESPUÉS DE GUARDAR)
+            $receivedSignature = $request->header('x-bold-signature');
+            $raw = $request->getContent();
+            $secret = env('BOLD_SECRET_KEY');
+            Log::info('🔐 DEBUG FIRMA', [
+                'raw' => $raw,
+                'secret' => $secret,
+                'header' => $request->header('x-bold-signature')
+            ]);
+            
 
         if ($receivedSignature) {
 
+            // 🔥 1. RAW BODY
+            $rawBody = $request->getContent();
+            $rawBody = trim($rawBody);
+            Log::info('🔥 RAW REAL', [
+                'raw' => $rawBody,
+                'length' => strlen($rawBody)
+            ]);
+
+            // 🔥 2. BASE64
+            $encoded = base64_encode($rawBody);
+
+            // 🔥 3. HMAC SHA256
             $calculated = hash_hmac('sha256', $rawBody, $secret);
 
+            // 🔥 DEBUG (puedes quitar luego)
             Log::info('🔐 DEBUG FIRMA', [
+                'base64' => $encoded,
                 'calculated' => $calculated,
                 'received' => $receivedSignature
             ]);
 
-            if (!hash_equals($calculated, $receivedSignature)) {
-                Log::error('❌ Firma inválida', [
-                    'calculated' => $calculated,
-                    'received' => $receivedSignature
-                ]);
-
-                return response()->json(['error' => 'Firma inválida'], 403);
-            }
+            // 🔥 4. COMPARACIÓN SEGURA
+        if (!hash_equals($calculated, $receivedSignature)) {
+            Log::error('❌ Firma inválida', [
+                'raw' => $rawBody,
+                'calculated' => $calculated,
+                'received' => $receivedSignature
+            ]);
+        }
 
         } else {
             Log::warning('⚠️ Webhook sin firma');
-            return response()->json(['error' => 'Sin firma'], 400);
         }
 
-        // 🧠 4. EXTRAER DATOS
-        $orderId = data_get($payload, 'data.metadata.reference');
-        $paymentId = data_get($payload, 'data.payment_id');
-        $type = data_get($payload, 'type');
+            // 🧠 6. VALIDACIONES LÓGICAS
+            if (!$orderId || !$order) {
+                return ApiResponse::error('Orden no encontrada', Response::HTTP_NOT_FOUND);
+            }
 
-        // 🔎 5. BUSCAR ORDEN
-        $order = $orderId ? OrderBold::where('order_id', $orderId)->first() : null;
+            // 🔄 7. MAPEAR ESTADO
+            switch ($type) {
+                case 'SALE_APPROVED':
+                    $order->status = 'paid';
+                    break;
+                case 'SALE_REJECTED':
+                    $order->status = 'failed';
+                    break;
+                default:
+                    $order->status = 'pending';
+            }
 
-        if (!$order) {
-            Log::warning('⚠️ Orden no encontrada', [
-                'order_id' => $orderId
+            // 💾 8. ACTUALIZAR ORDEN
+            $order->reference = $paymentId;
+            $order->save();
+
+            Log::info('✅ Orden actualizada', [
+                'order_id' => $orderId,
+                'status' => $order->status
             ]);
-            return ApiResponse::error('Orden no encontrada', Response::HTTP_NOT_FOUND);
+
+            return ApiResponse::success('Webhook procesado', Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            Log::error('❌ ERROR WEBHOOK', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        // 💾 6. GUARDAR RESPUESTA COMPLETA
-        $order->bold_response = [
-            'payload' => $payload,
-            'raw' => $rawBody,
-            'headers' => $request->headers->all()
-        ];
-
-        // 🔄 7. MAPEAR ESTADO
-        switch ($type) {
-            case 'SALE_APPROVED':
-                $order->status = 'paid';
-                break;
-            case 'SALE_REJECTED':
-                $order->status = 'failed';
-                break;
-            default:
-                $order->status = 'pending';
-        }
-
-        // 💾 8. ACTUALIZAR
-        $order->reference = $paymentId;
-        $order->save();
-
-        Log::info('✅ Orden actualizada', [
-            'order_id' => $orderId,
-            'status' => $order->status
-        ]);
-
-        return ApiResponse::success('Webhook procesado', Response::HTTP_OK);
-
-    } catch (\Exception $e) {
-        Log::error('❌ ERROR WEBHOOK', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-}
 }

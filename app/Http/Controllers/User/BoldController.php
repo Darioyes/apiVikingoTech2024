@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Users\OrderBold;
+use Illuminate\Support\Facades\Log;
 
 class BoldController extends Controller
 {
@@ -65,54 +66,70 @@ class BoldController extends Controller
         }
     }
 
-    public function webhook(Request $request)
-    {
+   public function webhook(Request $request)
+{
+    try {
 
-        try{
-            $orderId = $request->input('metadata.orderId'); 
-            $status = $request->input('status'); 
-            $reference = $request->input('reference');
-            
+        Log::info('🔥 WEBHOOK BOLD', $request->all());
 
-            $order = OrderBold::where('order_id', $orderId)->first();
-            $order->bold_response = $request->all();
+        $payload = $request->all();
 
-            if (!$order) {
-                return ApiResponse::error('Orden no encontrada', Response::HTTP_NOT_FOUND);
-            }
+        // 🔐 1. VALIDAR FIRMA (PRIMERO)
+        $receivedSignature = $request->header('x-bold-signature');
+        $secret = env('BOLD_SECRET_KEY');
 
-            // 🧠 Mapear estado
-            switch ($status) {
-                case 'approved':
-                    $order->status = 'paid';
-                    break;
-                case 'rejected':
-                    $order->status = 'failed';
-                    break;
-                default:
-                    $order->status = 'pending';
-            }
+        $calculated = hash('sha256', json_encode($payload) . $secret);
 
-            $order->reference = $reference;
-            $order->save();
-
-            $receivedSignature = $request->header('x-bold-signature');
-            $secret = env('BOLD_SECRET_KEY');
-
-            $calculated = hash('sha256', json_encode($request->all()) . $secret);
-
-            
-
-            if ($receivedSignature !== $calculated) {
-                return ApiResponse::error('Firma inválida', Response::HTTP_FORBIDDEN);
-            }
-
-            return ApiResponse::success('Webhook procesado', Response::HTTP_OK);
-
-        }catch(\Exception $e){
-            return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        if ($receivedSignature !== $calculated) {
+            Log::error('❌ Firma inválida');
+            return ApiResponse::error('Firma inválida', Response::HTTP_FORBIDDEN);
         }
 
-       
+        // 🧠 2. EXTRAER DATOS CORRECTOS DE BOLD
+        $type = $payload['type'] ?? null;
+
+        $orderId = data_get($payload, 'data.metadata.reference'); // 🔥 ESTE ES TU ID
+        $paymentId = data_get($payload, 'data.payment_id');
+
+        if (!$orderId) {
+            return ApiResponse::error('No viene reference en metadata', Response::HTTP_BAD_REQUEST);
+        }
+
+        // 🔎 3. BUSCAR ORDEN
+        $order = OrderBold::where('order_id', $orderId)->first();
+
+        if (!$order) {
+            Log::error('❌ Orden no encontrada', ['order_id' => $orderId]);
+            return ApiResponse::error('Orden no encontrada', Response::HTTP_NOT_FOUND);
+        }
+
+        // 🔄 4. MAPEAR ESTADO REAL DE BOLD
+        switch ($type) {
+            case 'SALE_APPROVED':
+                $order->status = 'paid';
+                break;
+            case 'SALE_REJECTED':
+                $order->status = 'failed';
+                break;
+            default:
+                $order->status = 'pending';
+        }
+
+        // 💾 5. GUARDAR DATOS
+        $order->reference = $paymentId;
+        $order->bold_response = $payload;
+        $order->save();
+
+        Log::info('✅ Orden actualizada', [
+            'order_id' => $orderId,
+            'status' => $order->status
+        ]);
+
+        return ApiResponse::success('Webhook procesado', Response::HTTP_OK);
+
+    } catch (\Exception $e) {
+        Log::error('❌ ERROR WEBHOOK', ['error' => $e->getMessage()]);
+        return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+}
 }

@@ -123,9 +123,17 @@ class BoldController extends Controller
                 'raw' => $rawBody,
                 'length' => strlen($rawBody)
             ]);
+            // 🔥 convertir a array
+            $data = json_decode($rawBody, true);
+
+            // 🔥 volver a generar JSON SIN espacios
+            $normalized = json_encode($data, JSON_UNESCAPED_SLASHES);
 
             // 🔥 2. BASE64
             $encoded = base64_encode($rawBody);
+
+            // 🔥 base64 del JSON limpio
+            $encoded = base64_encode($normalized);      
 
             // 🔥 3. HMAC SHA256
             $calculated = hash_hmac('sha256', $encoded, $secret);

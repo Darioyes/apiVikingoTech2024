@@ -107,23 +107,47 @@ class BoldController extends Controller
 
         // 🔐 5. VALIDAR FIRMA (DESPUÉS DE GUARDAR)
         $receivedSignature = $request->header('x-bold-signature');
+        $raw = $request->getContent();
         $secret = env('BOLD_SECRET_KEY');
+        Log::info('🔐 DEBUG FIRMA', [
+            'raw' => $raw,
+            'secret' => $secret,
+            'header' => $request->header('x-bold-signature')
+        ]);
+        
 
-        if ($receivedSignature) {
-            $rawBody = $request->getContent();
-            $calculated = hash('sha256', $rawBody . $secret);
+    if ($receivedSignature) {
 
-            if ($receivedSignature !== $calculated) {
-                Log::error('❌ Firma inválida', [
-                    'received' => $receivedSignature,
-                    'calculated' => $calculated
-                ]);
+        // 🔥 1. RAW BODY
+        $rawBody = $request->getContent();
 
-                // ❗ NO detenemos aquí para no perder info
-            }
-        } else {
-            Log::warning('⚠️ Webhook sin firma');
+        // 🔥 2. BASE64
+        $encoded = base64_encode($rawBody);
+
+        // 🔥 3. HMAC SHA256
+        $calculated = hash_hmac('sha256', $encoded, $secret);
+
+        // 🔥 DEBUG (puedes quitar luego)
+        Log::info('🔐 DEBUG FIRMA', [
+            'base64' => $encoded,
+            'calculated' => $calculated,
+            'received' => $receivedSignature
+        ]);
+
+        // 🔥 4. COMPARACIÓN SEGURA
+        if (!hash_equals($calculated, $receivedSignature)) {
+            Log::error('❌ Firma inválida', [
+                'received' => $receivedSignature,
+                'calculated' => $calculated
+            ]);
+
+            // ⚠️ En pruebas NO bloquees
+            // return response()->json(['error' => 'Firma inválida'], 403);
         }
+
+    } else {
+        Log::warning('⚠️ Webhook sin firma');
+    }
 
         // 🧠 6. VALIDACIONES LÓGICAS
         if (!$orderId || !$order) {

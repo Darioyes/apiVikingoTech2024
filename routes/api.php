@@ -27,6 +27,7 @@ use App\Http\Controllers\User\CategoriesProductsController as CategoriesProducts
 use App\Http\Controllers\User\Maintenance as MaintenanceFrontController;
 use App\Http\Controllers\User\ShoopingCart as ShoopingCartController;
 use App\Http\Controllers\User\SalesController as SalesFrontController;
+use App\Http\Controllers\User\BoldController;
 
 /*
 |--------------------------------------------------------------------------
@@ -212,6 +213,11 @@ Route::post('/password/email', [UserFrontController::class, 'sendRecoveryLink'])
 // 2. Para que el usuario guarde la nueva contraseña (el formulario final en Angular)
 Route::post('/password/reset', [UserFrontController::class, 'resetPassword']);
 
+//?rutas para crear orden para la compra con bold
+Route::post('/bold/create-order', [BoldController::class, 'createOrder']);
+//?ruta webhook para actualizar el estado de la orden de bold
+Route::post('/bold/webhook', [BoldController::class, 'webhook']);
+
 Route::middleware('auth:sanctum','verified')->group(function(){
     //?Ruta mantenimientos para usuarios
     Route::get('vikingousers/maintenances/{id}', [MaintenanceFrontController::class, 'show']);
@@ -219,6 +225,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     Route::get('vikingousers/sales/user/{id}', [SalesFrontController::class, 'show']);
     //?ruta para crear una venta
     Route::post('vikingousers/sales', [SalesFrontController::class, 'store']);
+    Route::post('/bold/signature', [BoldController::class, 'generateSignature']);
 });
 
 Route::middleware('auth:sanctum')->group(function(){

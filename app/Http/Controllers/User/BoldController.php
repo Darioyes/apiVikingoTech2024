@@ -120,7 +120,7 @@ class BoldController extends Controller
     if ($receivedSignature) {
 
         // 🔥 1. RAW BODY
-        $rawBody = $request->getContent();
+        $rawBody = $request->input('raw');
 
         // 🔥 2. BASE64
         $encoded = base64_encode($rawBody);

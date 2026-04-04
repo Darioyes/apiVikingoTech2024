@@ -125,7 +125,7 @@ class BoldController extends Controller
         $encoded = base64_encode($rawBody);
 
         // 🔥 3. HMAC SHA256
-        $calculated = hash_hmac('sha256', $encoded, $secret);
+        $calculated = hash_hmac('sha256', $rawBody, $secret);
 
         // 🔥 DEBUG (puedes quitar luego)
         Log::info('🔐 DEBUG FIRMA', [
@@ -135,15 +135,13 @@ class BoldController extends Controller
         ]);
 
         // 🔥 4. COMPARACIÓN SEGURA
-        if (!hash_equals($calculated, $receivedSignature)) {
-            Log::error('❌ Firma inválida', [
-                'received' => $receivedSignature,
-                'calculated' => $calculated
-            ]);
-
-            // ⚠️ En pruebas NO bloquees
-            // return response()->json(['error' => 'Firma inválida'], 403);
-        }
+    if (!hash_equals($calculated, $receivedSignature)) {
+        Log::error('❌ Firma inválida', [
+            'raw' => $rawBody,
+            'calculated' => $calculated,
+            'received' => $receivedSignature
+        ]);
+    }
 
     } else {
         Log::warning('⚠️ Webhook sin firma');

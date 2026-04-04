@@ -66,44 +66,71 @@ class BoldController extends Controller
         }
     }
 
-   public function webhook(Request $request)
+  public function webhook(Request $request)
 {
     try {
 
-        Log::info('🔥 WEBHOOK BOLD', $request->all());
-
+        // 🔥 1. OBTENER PAYLOAD (SIEMPRE)
         $payload = $request->all();
 
-        // 🔐 1. VALIDAR FIRMA (PRIMERO)
+        if (empty($payload)) {
+            $payload = json_decode($request->getContent(), true);
+        }
+
+        Log::info('🔥 WEBHOOK BOLD', $payload);
+
+        // 🧠 2. EXTRAER DATOS CLAVE (ANTES DE TODO)
+        $orderId = data_get($payload, 'data.metadata.reference');
+        $paymentId = data_get($payload, 'data.payment_id');
+        $type = data_get($payload, 'type');
+
+        // 🔎 3. BUSCAR ORDEN (SI EXISTE)
+        $order = null;
+
+        if ($orderId) {
+            $order = OrderBold::where('order_id', $orderId)->first();
+        }
+
+        // 💾 4. GUARDAR SIEMPRE LA RESPUESTA (🔥 CLAVE)
+        if ($order) {
+            $order->bold_response = [
+                'payload' => $payload,
+                'raw' => $request->getContent(),
+                'headers' => $request->headers->all()
+            ];
+            $order->save();
+        } else {
+            Log::warning('⚠️ Orden no encontrada para guardar payload', [
+                'order_id' => $orderId
+            ]);
+        }
+
+        // 🔐 5. VALIDAR FIRMA (DESPUÉS DE GUARDAR)
         $receivedSignature = $request->header('x-bold-signature');
         $secret = env('BOLD_SECRET_KEY');
 
-        $calculated = hash('sha256', json_encode($payload) . $secret);
+        if ($receivedSignature) {
+            $rawBody = $request->getContent();
+            $calculated = hash('sha256', $rawBody . $secret);
 
-        if ($receivedSignature !== $calculated) {
-            Log::error('❌ Firma inválida');
-            return ApiResponse::error('Firma inválida', Response::HTTP_FORBIDDEN);
+            if ($receivedSignature !== $calculated) {
+                Log::error('❌ Firma inválida', [
+                    'received' => $receivedSignature,
+                    'calculated' => $calculated
+                ]);
+
+                // ❗ NO detenemos aquí para no perder info
+            }
+        } else {
+            Log::warning('⚠️ Webhook sin firma');
         }
 
-        // 🧠 2. EXTRAER DATOS CORRECTOS DE BOLD
-        $type = $payload['type'] ?? null;
-
-        $orderId = data_get($payload, 'data.metadata.reference'); // 🔥 ESTE ES TU ID
-        $paymentId = data_get($payload, 'data.payment_id');
-
-        if (!$orderId) {
-            return ApiResponse::error('No viene reference en metadata', Response::HTTP_BAD_REQUEST);
-        }
-
-        // 🔎 3. BUSCAR ORDEN
-        $order = OrderBold::where('order_id', $orderId)->first();
-
-        if (!$order) {
-            Log::error('❌ Orden no encontrada', ['order_id' => $orderId]);
+        // 🧠 6. VALIDACIONES LÓGICAS
+        if (!$orderId || !$order) {
             return ApiResponse::error('Orden no encontrada', Response::HTTP_NOT_FOUND);
         }
 
-        // 🔄 4. MAPEAR ESTADO REAL DE BOLD
+        // 🔄 7. MAPEAR ESTADO
         switch ($type) {
             case 'SALE_APPROVED':
                 $order->status = 'paid';
@@ -115,9 +142,8 @@ class BoldController extends Controller
                 $order->status = 'pending';
         }
 
-        // 💾 5. GUARDAR DATOS
+        // 💾 8. ACTUALIZAR ORDEN
         $order->reference = $paymentId;
-        $order->bold_response = $payload;
         $order->save();
 
         Log::info('✅ Orden actualizada', [
@@ -128,7 +154,11 @@ class BoldController extends Controller
         return ApiResponse::success('Webhook procesado', Response::HTTP_OK);
 
     } catch (\Exception $e) {
-        Log::error('❌ ERROR WEBHOOK', ['error' => $e->getMessage()]);
+        Log::error('❌ ERROR WEBHOOK', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
         return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

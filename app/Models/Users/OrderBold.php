@@ -14,6 +14,15 @@ class OrderBold extends Model
         'amount',
         'currency',
         'status',
-        'reference'
+        'reference',
+        'bold_response'
+    ];
+
+    protected $casts = [
+        'bold_response' => 'array',
+    ];
+
+    protected $attributes = [
+        'status' => 'pending',
     ];
 }

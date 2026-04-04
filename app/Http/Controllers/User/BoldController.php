@@ -66,92 +66,72 @@ class BoldController extends Controller
         }
     }
 
-  public function webhook(Request $request)
+public function webhook(Request $request)
 {
     try {
 
-        // 🔥 1. OBTENER PAYLOAD (SIEMPRE)
-        $payload = $request->all();
-        Log::info('🔎 HEADERS RAW', $request->headers->all());
+        // 🔥 1. RAW REAL (ÚNICA FUENTE DE VERDAD)
+        $rawBody = file_get_contents('php://input');
 
-        if (empty($payload)) {
-            $payload = json_decode($request->getContent(), true);
-        }
+        Log::info('🔥 RAW REAL', [
+            'raw' => $rawBody,
+            'length' => strlen($rawBody)
+        ]);
+
+        // 🔥 2. CONVERTIR A JSON
+        $payload = json_decode($rawBody, true);
 
         Log::info('🔥 WEBHOOK BOLD', $payload);
+        Log::info('🔎 HEADERS RAW', $request->headers->all());
 
-        // 🧠 2. EXTRAER DATOS CLAVE (ANTES DE TODO)
+        // 🧠 3. VALIDAR FIRMA (ANTES DE TODO)
+        $receivedSignature = $request->header('x-bold-signature');
+        $secret = env('BOLD_SECRET_KEY');
+
+        if ($receivedSignature) {
+
+            $calculated = hash_hmac('sha256', $rawBody, $secret);
+
+            Log::info('🔐 DEBUG FIRMA', [
+                'calculated' => $calculated,
+                'received' => $receivedSignature
+            ]);
+
+            if (!hash_equals($calculated, $receivedSignature)) {
+                Log::error('❌ Firma inválida', [
+                    'calculated' => $calculated,
+                    'received' => $receivedSignature
+                ]);
+
+                return response()->json(['error' => 'Firma inválida'], 403);
+            }
+
+        } else {
+            Log::warning('⚠️ Webhook sin firma');
+            return response()->json(['error' => 'Sin firma'], 400);
+        }
+
+        // 🧠 4. EXTRAER DATOS
         $orderId = data_get($payload, 'data.metadata.reference');
         $paymentId = data_get($payload, 'data.payment_id');
         $type = data_get($payload, 'type');
 
-        // 🔎 3. BUSCAR ORDEN (SI EXISTE)
-        $order = null;
+        // 🔎 5. BUSCAR ORDEN
+        $order = $orderId ? OrderBold::where('order_id', $orderId)->first() : null;
 
-        if ($orderId) {
-            $order = OrderBold::where('order_id', $orderId)->first();
-        }
-
-        // 💾 4. GUARDAR SIEMPRE LA RESPUESTA (🔥 CLAVE)
-        if ($order) {
-            $order->bold_response = [
-                'payload' => $payload,
-                'raw' => $request->getContent(),
-                'headers' => $request->headers->all()
-            ];
-            $order->save();
-        } else {
-            Log::warning('⚠️ Orden no encontrada para guardar payload', [
+        if (!$order) {
+            Log::warning('⚠️ Orden no encontrada', [
                 'order_id' => $orderId
             ]);
-        }
-
-        // 🔐 5. VALIDAR FIRMA (DESPUÉS DE GUARDAR)
-        $receivedSignature = $request->header('x-bold-signature');
-        $raw = $request->getContent();
-        $secret = env('BOLD_SECRET_KEY');
-        Log::info('🔐 DEBUG FIRMA', [
-            'raw' => $raw,
-            'secret' => $secret,
-            'header' => $request->header('x-bold-signature')
-        ]);
-        
-
-    if ($receivedSignature) {
-
-        // 🔥 1. RAW BODY
-        $rawBody = $request->input('raw');
-
-        // 🔥 2. BASE64
-        $encoded = base64_encode($rawBody);
-
-        // 🔥 3. HMAC SHA256
-        $calculated = hash_hmac('sha256', $rawBody, $secret);
-
-        // 🔥 DEBUG (puedes quitar luego)
-        Log::info('🔐 DEBUG FIRMA', [
-            'base64' => $encoded,
-            'calculated' => $calculated,
-            'received' => $receivedSignature
-        ]);
-
-        // 🔥 4. COMPARACIÓN SEGURA
-    if (!hash_equals($calculated, $receivedSignature)) {
-        Log::error('❌ Firma inválida', [
-            'raw' => $rawBody,
-            'calculated' => $calculated,
-            'received' => $receivedSignature
-        ]);
-    }
-
-    } else {
-        Log::warning('⚠️ Webhook sin firma');
-    }
-
-        // 🧠 6. VALIDACIONES LÓGICAS
-        if (!$orderId || !$order) {
             return ApiResponse::error('Orden no encontrada', Response::HTTP_NOT_FOUND);
         }
+
+        // 💾 6. GUARDAR RESPUESTA COMPLETA
+        $order->bold_response = [
+            'payload' => $payload,
+            'raw' => $rawBody,
+            'headers' => $request->headers->all()
+        ];
 
         // 🔄 7. MAPEAR ESTADO
         switch ($type) {
@@ -165,7 +145,7 @@ class BoldController extends Controller
                 $order->status = 'pending';
         }
 
-        // 💾 8. ACTUALIZAR ORDEN
+        // 💾 8. ACTUALIZAR
         $order->reference = $paymentId;
         $order->save();
 

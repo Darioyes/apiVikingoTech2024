@@ -133,7 +133,8 @@ class BoldController extends Controller
             $encoded = base64_encode($rawBody);
 
             // 🔥 base64 del JSON limpio
-            $encoded = base64_encode($normalized);      
+            $encoded = base64_encode($normalized);  
+            $secret = '';
 
             // 🔥 3. HMAC SHA256
             $calculated = hash_hmac('sha256', $encoded, $secret);

@@ -145,6 +145,11 @@ class BoldController extends Controller
                 'received' => $receivedSignature
             ]);
 
+            Log::info('🔍 TEST HASH RAW', [
+                'hash_raw' => hash_hmac('sha256', $rawBody, $secret),
+                'hash_base64' => hash_hmac('sha256', base64_encode($rawBody), $secret),
+            ]);
+
             // 🔥 4. COMPARACIÓN SEGURA
             if (!hash_equals($calculated, $receivedSignature)) {
                 Log::error('❌ Firma inválida', [

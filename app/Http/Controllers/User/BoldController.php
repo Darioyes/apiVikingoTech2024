@@ -108,7 +108,7 @@ class BoldController extends Controller
 
             // 🔐 5. VALIDAR FIRMA (DESPUÉS DE GUARDAR)
             $receivedSignature = $request->header('x-bold-signature');
-            $secret = env('BOLD_SECRET_KEY');
+            $secret = '';//vacio en pruebas cambiar por env('BOLD_SECRET_KEY') en producción
             Log::info('🔐 DEBUG FIRMA', [
                 'secret' => $secret,
                 'header' => $request->header('x-bold-signature')
@@ -123,18 +123,9 @@ class BoldController extends Controller
                 'raw' => $rawBody,
                 'length' => strlen($rawBody)
             ]);
-            // 🔥 convertir a array
-            $data = json_decode($rawBody, true);
-
-            // 🔥 volver a generar JSON SIN espacios
-            $normalized = json_encode($data, JSON_UNESCAPED_SLASHES);
 
             // 🔥 2. BASE64
             $encoded = base64_encode($rawBody);
-
-            // 🔥 base64 del JSON limpio
-            $encoded = base64_encode($normalized);  
-            $secret = '';
 
             // 🔥 3. HMAC SHA256
             $calculated = hash_hmac('sha256', $encoded, $secret);
@@ -152,11 +143,14 @@ class BoldController extends Controller
             ]);
 
             // 🔥 4. COMPARACIÓN SEGURA
+
             if (!hash_equals($calculated, $receivedSignature)) {
                 Log::error('❌ Firma inválida', [
                     'calculated' => $calculated,
                     'received' => $receivedSignature
                 ]);
+            } else {
+                Log::info('✅ Firma válida');
             }
 
         } else {

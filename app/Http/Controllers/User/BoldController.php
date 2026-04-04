@@ -72,6 +72,7 @@ class BoldController extends Controller
 
         // 🔥 1. OBTENER PAYLOAD (SIEMPRE)
         $payload = $request->all();
+        Log::info('🔎 HEADERS RAW', $request->headers->all());
 
         if (empty($payload)) {
             $payload = json_decode($request->getContent(), true);

@@ -30,6 +30,8 @@ return new class extends Migration
             $table->json('bold_response')->nullable();
             //referencia para guardar si las firmas coinciden o no
             $table->string('signature_valid')->default('false');
+            //columna total para guardar el total de la compra
+            $table->decimal('total', 10, 2)->nullable();
 
             // ⏰ Timestamps
             $table->timestamps();

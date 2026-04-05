@@ -184,6 +184,7 @@ class BoldController extends Controller
 
             // 💾 8. ACTUALIZAR ORDEN
             $order->reference = $paymentId;
+            $order->total = data_get($payload, 'data.amount.total');
             $order->save();
 
             Log::info('✅ Orden actualizada', [

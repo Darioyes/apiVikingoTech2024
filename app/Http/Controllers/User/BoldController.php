@@ -167,7 +167,7 @@ class BoldController extends Controller
             // 🔄 7. MAPEAR ESTADO
             switch ($type) {
                 case 'SALE_APPROVED':
-                    $order->status = 'paid';
+                    $order->status = 'approved';
                     break;
                 case 'SALE_REJECTED':
                     $order->status = 'failed';

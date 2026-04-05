@@ -213,8 +213,6 @@ Route::post('/password/email', [UserFrontController::class, 'sendRecoveryLink'])
 // 2. Para que el usuario guarde la nueva contraseña (el formulario final en Angular)
 Route::post('/password/reset', [UserFrontController::class, 'resetPassword']);
 
-//?rutas para crear orden para la compra con bold
-Route::post('/bold/create-order', [BoldController::class, 'createOrder']);
 //?ruta webhook para actualizar el estado de la orden de bold
 Route::post('/bold/webhook', [BoldController::class, 'webhook']);
 
@@ -226,6 +224,8 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?ruta para crear una venta
     Route::post('vikingousers/sales', [SalesFrontController::class, 'store']);
     Route::post('/bold/signature', [BoldController::class, 'generateSignature']);
+    //?rutas para crear orden para la compra con bold
+    Route::post('/bold/create-order', [BoldController::class, 'createOrder']);
 });
 
 Route::middleware('auth:sanctum')->group(function(){

@@ -17,7 +17,8 @@ class Sales extends Model
         'user_id',
         'product_id',
         'sale_total',
-        'cost_total'
+        'cost_total',
+        'bold_order_id'
     ];
 
     //relacion muchos a uno con la tabla users
@@ -35,5 +36,11 @@ class Sales extends Model
     public function transactions()
     {
         return $this->hasMany(Transactions::class);
+    }
+
+    //relacipon de muchos a uno con la tabla order_bolds
+    public function orderBold()
+    {
+        return $this->belongsTo(OrderBold::class, 'bold_order_id', 'order_id');
     }
 }

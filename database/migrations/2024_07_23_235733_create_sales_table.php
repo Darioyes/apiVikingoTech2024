@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('cost_total', 15, 2)->required();
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
+            $table->uuid('bold_order_id')->nullable()->constrained('order_id')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('restrict')->onUpdate('cascade');
         });
     }

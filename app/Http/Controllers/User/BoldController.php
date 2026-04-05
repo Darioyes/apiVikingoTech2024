@@ -170,7 +170,7 @@ class BoldController extends Controller
                     $order->status = 'approved';
                     break;
                 case 'SALE_REJECTED':
-                    $order->status = 'failed';
+                    $order->status = 'rejected';
                     break;
                 case 'VOID_APPROVED':
                     $order->status = 'voided';

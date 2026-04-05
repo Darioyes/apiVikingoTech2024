@@ -24,8 +24,9 @@ class SaleResource extends JsonResource
             'updated_at'    => $this->updated_at,
             'user_id'       => $this->user_id,
             'product_id'    => $this->product_id,
-            'cost_total'    => $this->cost_total,
+            'sale_total'    => $this->sale_total,
             'product'       => $this->product, 
+            'bold_order_id' => $this->bold_order_id
         ];
     }
 }

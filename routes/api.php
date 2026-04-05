@@ -224,8 +224,7 @@ Route::middleware('auth:sanctum','verified')->group(function(){
     //?ruta para crear una venta
     Route::post('vikingousers/sales', [SalesFrontController::class, 'store']);
     Route::post('/bold/signature', [BoldController::class, 'generateSignature']);
-    //?rutas para crear orden para la compra con bold
-    Route::post('/bold/create-order', [BoldController::class, 'createOrder']);
+
 });
 
 Route::middleware('auth:sanctum')->group(function(){
@@ -237,6 +236,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('vikingousers/shoopingcart/user/{userId}', [ShoopingCartController::class, 'getShoopingCartByUser']);
     //?ruta para modificar la cantidad de un producto en el carrito de compras si ya existe o agregarlo si no existe
     Route::post('vikingousers/shoopingcart/quantity/{id}', [ShoopingCartController::class, 'storeQuantity']);
+    //?rutas para crear orden para la compra con bold
+    Route::post('/bold/create-order', [BoldController::class, 'createOrder']);
 });
     
 //?ruta para reenviar el correo de verificación

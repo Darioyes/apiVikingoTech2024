@@ -28,6 +28,10 @@ return new class extends Migration
 
             // 🧾 (Opcional pero PRO 🔥)
             $table->json('bold_response')->nullable();
+            //referencia para guardar si las firmas coinciden o no
+            $table->string('signature_valid')->default('false');
+
+            // ⏰ Timestamps
             $table->timestamps();
         });
     }

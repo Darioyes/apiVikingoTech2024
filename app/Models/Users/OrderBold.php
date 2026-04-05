@@ -15,7 +15,8 @@ class OrderBold extends Model
         'currency',
         'status',
         'reference',
-        'bold_response'
+        'bold_response',
+        'signature_valid'
     ];
 
     protected $casts = [

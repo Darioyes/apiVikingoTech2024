@@ -151,10 +151,12 @@ class BoldController extends Controller
                 ]);
             } else {
                 Log::info('✅ Firma válida');
+                $order->signature_valid = 'true';
             }
 
         } else {
             Log::warning('⚠️ Webhook sin firma');
+            $order->signature_valid = 'false';
         }
 
             // 🧠 6. VALIDACIONES LÓGICAS
@@ -170,6 +172,12 @@ class BoldController extends Controller
                 case 'SALE_REJECTED':
                     $order->status = 'failed';
                     break;
+                case 'VOID_APPROVED':
+                    $order->status = 'voided';
+                    break;
+                case 'VOID_REJECTED ':
+                    $order->status = 'void_failed';
+                    break;
                 default:
                     $order->status = 'pending';
             }
@@ -183,7 +191,7 @@ class BoldController extends Controller
                 'status' => $order->status
             ]);
 
-            return ApiResponse::success('Webhook procesado', Response::HTTP_OK);
+            return ApiResponse::success('Webhook procesado', Response::HTTP_OK, $order);
 
         } catch (\Exception $e) {
             Log::error('❌ ERROR WEBHOOK', [
